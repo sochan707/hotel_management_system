@@ -50,4 +50,24 @@ public class Payment {
     public void setPaymentStatus(String paymentStatus) { //DEFINE PAYMENT STATUS LATER CUZ I DONT KNOW WHAT IT IS RN
         this.paymentStatus = paymentStatus;
     }
+    
+    public String getPaymentId() {
+        return paymentId;
+    }
+    
+    public double getAmountPaid() {
+        return amountPaid;
+    }
+
+    public String getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public String getPaymentDate() {
+        return paymentDate;
+    }
+
+    public String getPaymentStatus() {
+        return paymentStatus;
+    }
 }
