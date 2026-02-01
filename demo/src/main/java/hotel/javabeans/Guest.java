@@ -1,8 +1,12 @@
+package hotel.javabeans;
 public class Guest {
     private String id;
     private String name;
     private String gender;
     private String phone;
+    
+    private static final String MALE = "Male";
+    private static final String FEMALE = "Female";
     
     
     

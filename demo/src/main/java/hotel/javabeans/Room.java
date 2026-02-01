@@ -76,7 +76,7 @@ public String getRoomNumber() {
                 throw new IllegalArgumentException("Status must be Available, Booked, or Occupied.");
             }
         } else {
-            throw new IllegalArgumentException("Status cannot be null or empty.");
+            throw new IllegalArgumentException("Status cannot be empty.");
         }
     }
 }
