@@ -7,6 +7,7 @@ public class Invoice {
     private int numberOfRooms;
     private int numberOfNights;
     private int numberOfGuests;
+    private double extraPersonCharge;
     private double discount;
     private double totalAmount;
     private boolean isPaid;
@@ -17,8 +18,11 @@ public class Invoice {
         setRoomCharges(roomCharges);
         setNumberOfRooms(numberOfRooms);
         setNumberOfNights(numberOfNights);
-        setNumberOfGuests(numberOfGuests, typeOfRoom);
-
+        setNumberOfGuests(numberOfGuests);
+        setExtraPersonCharge(numberOfGuests, typeOfRoom);
+        setDiscount(totalAmount);
+        setTotalAmount(totalAmount);
+        setIsPaid(isPaid);
     }
 
     public void setInvoiceId(String invoiceId) {
@@ -61,12 +65,96 @@ public class Invoice {
         }
     }
 
-    public void setNumberOfGuests(int numberOfGuests, String typeOfRoom) {
-        setTypeOfRoom(typeOfRoom);
+    public void setNumberOfGuests(int numberOfGuests) {
         if(numberOfGuests > 0) {
             this.numberOfGuests = numberOfGuests;
         } else {
             throw new IllegalArgumentException("Number of guests cannot be negative or zero.");
         }
     }
+
+    public void setExtraPersonCharge(int numberOfGuests, String typeOfRoom) {
+        int includedGuests = 0;
+        switch(typeOfRoom) {
+            case "Single":
+                includedGuests = 1;
+                break;
+            case "Double":
+                includedGuests = 2;
+                break;
+            case "Triple":
+                includedGuests = 3;
+                break;
+        }
+        if(numberOfGuests > includedGuests) {
+            this.extraPersonCharge = (numberOfGuests - includedGuests) * 10.00; // $10 per extra person
+        } else {
+            this.extraPersonCharge = 0.00;
+        }
+    }
+
+    public void setDiscount(double totalAmount) {
+        if(discount >= 0.00) {
+            this.discount = discount;
+        } else {
+            throw new IllegalArgumentException("Discount cannot be negative.");
+        }
+    }
+
+    public void setTotalAmount(double totalAmount) {
+        if(totalAmount >= 0.00) {
+            this.totalAmount = (roomCharges * numberOfRooms * numberOfNights) + extraPersonCharge - discount;
+        } else {
+            throw new IllegalArgumentException("Total amount cannot be negative.");
+        }
+    }
+
+    public void setIsPaid(boolean isPaid) {
+        if(isPaid == true || isPaid == false) {
+            this.isPaid = isPaid;
+        } else {
+            throw new IllegalArgumentException("Invalid payment status.");
+        }
+    }
+
+    public String getInvoiceId() {
+        return invoiceId;
+    }
+
+    public String getTypeOfRoom() {
+        return typeOfRoom;
+    }
+
+    public double getRoomCharges() {
+        return roomCharges;
+    }
+
+    public int getNumberOfRooms() {
+        return numberOfRooms;
+    }
+
+    public int getNumberOfNights() {
+        return numberOfNights;
+    }
+
+    public int getNumberOfGuests() {
+        return numberOfGuests;
+    }
+
+    public double getExtraPersonCharge() {
+        return extraPersonCharge;
+    }
+
+    public double getDiscount() {
+        return discount;
+    }
+
+    public double getTotalAmount() {
+        return totalAmount;
+    }
+
+    public boolean getIsPaid() {
+        return isPaid;
+    }
+    
 }
