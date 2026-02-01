@@ -23,4 +23,31 @@ public class Room {
         this.status = AVAILABLE;
     
 }
+public String getRoomNumber() {
+        return roomNumber;
+    }
+    
+    public String getRoomType() {
+        return roomType;
+    }
+    
+    public double getPrice() {
+        return price;
+    }
+    
+    public String getStatus() {
+        return status;
+    }
+    
+    public void setRoomType(String roomType) {
+        this.roomType = roomType;
+    }
+    
+    public void setPrice(double price) {
+        this.price = price;
+    }
+    
+    public void setStatus(String status) {
+        this.status = status;
+    }
 }
