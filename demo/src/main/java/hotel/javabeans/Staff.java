@@ -1,10 +1,12 @@
+package hotel.javabeans;
 public class Staff {
     private String id;
     private String name;
     private String gender;
     private String phone;
     private String position;
-    
+    public static final String MALE = "Male";
+public static final String FEMALE = "Female";
     
     
     public Staff(String id, String name,String gender, String phone,String position) {

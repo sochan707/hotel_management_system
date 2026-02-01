@@ -1,2 +1,10 @@
-hotel\javabeans\Reservation.class
+hotel\javabeans\Invoice.class
+hotel\javabeans\Staff.class
 hotel\javabeans\App.class
+hotel\javabeans\Room.class
+hotel\javabeans\Hotel.class
+hotel\javabeans\Login.class
+hotel\javabeans\LoginDemo.class
+hotel\javabeans\Payment.class
+hotel\javabeans\Reservation.class
+hotel\javabeans\Guest.class
