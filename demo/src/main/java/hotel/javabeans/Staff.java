@@ -5,14 +5,8 @@ public class Staff {
     private String gender;
     private String phone;
     private String position;
-<<<<<<< HEAD
     public static final String MALE = "Male";
 public static final String FEMALE = "Female";
-=======
-    
-    private static final String MALE = "Male";
-    private static final String FEMALE = "Female";
->>>>>>> a66cb948943a8c2cad2b864ee1b9986ef75ddfff
     
     
     public Staff(String id, String name,String gender, String phone,String position) {
@@ -45,7 +39,7 @@ public static final String FEMALE = "Female";
         return position;
     }
     
-     public void setId(String id) {
+     private void setId(String id) {
         if(id != null && !id.isEmpty()) {
             this.id = id;
         } else {
@@ -53,14 +47,14 @@ public static final String FEMALE = "Female";
         }
     }
     
-    public void setName(String name) {
+    private void setName(String name) {
         if(name != null && !name.isEmpty()) {
             this.name = name;
         } else {
-            throw new IllegalArgumentException("taff name cannot be null or empty.");
+            throw new IllegalArgumentException("Staff name cannot be null or empty.");
         }
     }
-    public void setGender(String gender) {
+    private void setGender(String gender) {
          if(gender != null && !gender.isEmpty()) {
             if(gender.equalsIgnoreCase(MALE) || gender.equalsIgnoreCase(FEMALE)) {
                 this.gender = gender;
@@ -72,7 +66,7 @@ public static final String FEMALE = "Female";
         }
     }
     
-    public void setPhone(String phone) {
+    private void setPhone(String phone) {
          if(phone != null && !phone.isEmpty()) {
             if(phone.length() >= 9 && phone.length() <= 15) {
                 this.phone = phone;
@@ -84,7 +78,7 @@ public static final String FEMALE = "Female";
         }
     }
     
-    public void setPosition(String position) {
+    private void setPosition(String position) {
          if(position != null && !position.isEmpty()) {
 
             this.position=position;
