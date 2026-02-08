@@ -14,13 +14,13 @@ public class Room {
     private String roomNumber;
     private String roomType;
     private double price;
-    private String status;
+    private String roomStatus;
     
     public Room(String roomNumber, String roomType, double price) {
         setRoomNumber(roomNumber);
         setRoomType(roomType);
         setPrice(price);
-        this.status = AVAILABLE; // Default status
+        this.roomStatus = AVAILABLE; // Default status
     
 }
 public String getRoomNumber() {
@@ -35,18 +35,18 @@ public String getRoomNumber() {
         return price;
     }
     
-    public String getStatus() {
-        return status;
+    public String getRoomStatus() {
+        return roomStatus;
     }
 
-     public void setRoomNumber(String roomNumber) {
+     private void setRoomNumber(String roomNumber) {
         if(roomNumber != null && !roomNumber.isEmpty()) {
             this.roomNumber = roomNumber;
         } else {
             throw new IllegalArgumentException("Room number cannot be null or empty.");
         }
     }
-    public void setRoomType(String roomType) {
+    private void setRoomType(String roomType) {
          if(roomType != null && !roomType.isEmpty()) {
             if(roomType.equals(SINGLE) || roomType.equals(DOUBLE) || 
                roomType.equals(TRIPLE)) {
@@ -59,7 +59,7 @@ public String getRoomNumber() {
         }
     }
     
-    public void setPrice(double price) {
+    private void setPrice(double price) {
         if(price > 0) {
             this.price = price;
         } else {
@@ -67,16 +67,27 @@ public String getRoomNumber() {
         }
     }
     
-    public void setStatus(String status) {
-         if(status != null && !status.isEmpty()) {
-            if(status.equals(AVAILABLE) || status.equals(BOOKED) || 
-               status.equals(OCCUPIED)) {
-                this.status = status;
+    private void setRoomStatus(String roomStatus) {
+         if(roomStatus != null && !roomStatus.isEmpty()) {
+            if(roomStatus.equals(AVAILABLE) || roomStatus.equals(BOOKED) || 
+               roomStatus.equals(OCCUPIED)) {
+                this.roomStatus = roomStatus;
             } else {
                 throw new IllegalArgumentException("Status must be Available, Booked, or Occupied.");
             }
         } else {
             throw new IllegalArgumentException("Status cannot be empty.");
         }
+    }
+    public boolean isAvailable() {
+       return AVAILABLE.equals(roomStatus);
+    }
+
+    public boolean isBooked() {
+       return BOOKED.equals(roomStatus);
+    }
+
+    public boolean isOccupied() {
+        return OCCUPIED.equals(roomStatus);
     }
 }
