@@ -1,13 +1,25 @@
 package hotel.javabeans;
 
+import java.time.LocalDate;
+import java.util.Objects;
+
+import hotel.javabeans.Payment.PaymentMethod;
+import hotel.javabeans.Payment.PaymentStatus;
+
 public class Payment {
     private String paymentId;
     private double amountPaid;
-    private String paymentMethod;
-    private String paymentDate;
-    private String paymentStatus;
+    private PaymentMethod paymentMethod;
+    private LocalDate paymentDate;
+    private PaymentStatus paymentStatus;
 
-    public Payment(String paymentId, double amountPaid, String paymentMethod, String paymentDate, String paymentStatus) {
+    public Payment( // data dea ke required
+            String paymentId,
+            double amountPaid,
+            PaymentMethod paymentMethod,
+            LocalDate paymentDate,
+            PaymentStatus paymentStatus
+    ) { // add validation 
         setPaymentId(paymentId);
         setAmountPaid(amountPaid);
         setPaymentMethod(paymentMethod);
@@ -15,40 +27,44 @@ public class Payment {
         setPaymentStatus(paymentStatus);
     }
 
+    public enum PaymentMethod { 
+        CASH, CARD, ONLINE
+    }
+
+    public enum PaymentStatus {
+        PAID, PENDING, FAILED
+    }
+
     public void setPaymentId(String paymentId) {
-        if(paymentId != null && !paymentId.isEmpty()) {
-            this.paymentId = paymentId;
-        } else {
-            throw new IllegalArgumentException("Payment ID cannot be null or empty.");
+        if (paymentId == null || paymentId.isBlank()) {
+            throw new IllegalArgumentException("Payment ID cannot be null or blank.");
         }
+        this.paymentId = paymentId;
     }
 
     public void setAmountPaid(double amountPaid) {
-        if(amountPaid >= 0) {
-            this.amountPaid = amountPaid;
-        } else {
+        if (amountPaid < 0) {
             throw new IllegalArgumentException("Amount paid cannot be negative.");
         }
+        this.amountPaid = amountPaid;
     }
 
-    public void setPaymentMethod(String paymentMethod) {
-        if(paymentMethod != null && !paymentMethod.isEmpty()) {
-            this.paymentMethod = paymentMethod;
-        } else {
-            throw new IllegalArgumentException("Payment method cannot be null or empty."); //need to fix this later
-        }
+    public void setPaymentMethod(PaymentMethod paymentMethod) {
+        this.paymentMethod = Objects.requireNonNull(
+                paymentMethod, "Payment method cannot be null."
+        );
     }
 
-    public void setPaymentDate(String paymentDate) {
-        if(paymentDate != null && !paymentDate.isEmpty()) {
-            this.paymentDate = paymentDate;
-        } else {
-            throw new IllegalArgumentException("Payment date cannot be null or empty."); //need to fix this later too
-        }
+    public void setPaymentDate(LocalDate paymentDate) {
+        this.paymentDate = Objects.requireNonNull(
+                paymentDate, "Payment date cannot be null."
+        );
     }
 
-    public void setPaymentStatus(String paymentStatus) { //DEFINE PAYMENT STATUS LATER CUZ I DONT KNOW WHAT IT IS RN
-        this.paymentStatus = paymentStatus;
+    public void setPaymentStatus(PaymentStatus paymentStatus) { 
+        this.paymentStatus = Objects.requireNonNull(
+                paymentStatus, "Payment status cannot be null."
+        );
     }
     
     public String getPaymentId() {
@@ -59,15 +75,15 @@ public class Payment {
         return amountPaid;
     }
 
-    public String getPaymentMethod() {
+    public PaymentMethod getPaymentMethod() {
         return paymentMethod;
     }
 
-    public String getPaymentDate() {
+    public LocalDate getPaymentDate() {
         return paymentDate;
     }
 
-    public String getPaymentStatus() {
+    public PaymentStatus getPaymentStatus() {
         return paymentStatus;
     }
 }
