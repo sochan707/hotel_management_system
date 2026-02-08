@@ -8,7 +8,7 @@ public class App
 {
     public static void main( String[] args )
     {
-                Scanner scan = new Scanner(System.in);
+        Scanner scan = new Scanner(System.in);
 
         //Reservation
         System.out.print("Enter guest name: ");
