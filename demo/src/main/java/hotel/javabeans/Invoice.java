@@ -1,52 +1,72 @@
 package hotel.javabeans;
 
+import java.util.Objects;
+
+import hotel.javabeans.Invoice.RoomType;
+
 public class Invoice {
     private String invoiceId;
-    private String typeOfRoom;
+    private RoomType roomType;
     private double roomCharges;
     private int numberOfRooms;
     private int numberOfNights;
     private int numberOfGuests;
-    private double extraPersonCharge;
-    private double discount;
-    private double totalAmount;
     private boolean isPaid;
 
-    public Invoice(String invoiceId, String typeOfRoom, double roomCharges, int numberOfRooms, int numberOfNights, int numberOfGuests, double totalAmount, boolean isPaid) {
+    private static final double EXTRA_PERSON_FEE = 10.00;
+
+    public Invoice(
+            String invoiceId,
+            RoomType roomType,
+            double roomCharges,
+            int numberOfRooms,
+            int numberOfNights,
+            int numberOfGuests
+    ) {
         setInvoiceId(invoiceId);
-        setTypeOfRoom(typeOfRoom);
+        setRoomType(roomType);
         setRoomCharges(roomCharges);
         setNumberOfRooms(numberOfRooms);
         setNumberOfNights(numberOfNights);
         setNumberOfGuests(numberOfGuests);
-        setExtraPersonCharge(numberOfGuests, typeOfRoom);
-        setDiscount(totalAmount);
-        setTotalAmount(totalAmount);
-        setIsPaid(isPaid);
+        this.isPaid = false;
     }
+
+    public enum RoomType {
+        SINGLE(1),
+        DOUBLE(2),
+        TRIPLE(3);
+
+        private final int includedGuests;
+
+        RoomType(int includedGuests) {
+            this.includedGuests = includedGuests;
+        }
+
+        public int getIncludedGuests() {
+            return includedGuests;
+        }
+    }
+
 
     public void setInvoiceId(String invoiceId) {
-        if(invoiceId != null && !invoiceId.isEmpty()) {
-            this.invoiceId = invoiceId;
-        } else {
-            throw new IllegalArgumentException("Invoice ID cannot be null or empty.");
+        if (invoiceId == null || invoiceId.isBlank()) {
+            throw new IllegalArgumentException("Invoice ID cannot be null or blank.");
         }
+        this.invoiceId = invoiceId;
     }
 
-    public void setTypeOfRoom(String typeOfRoom) {
-        if("Single".equals(typeOfRoom) || "Double".equals(typeOfRoom) || "Triple".equals(typeOfRoom)) {
-            this.typeOfRoom = typeOfRoom;
-        } else {
-            throw new IllegalArgumentException("Invalid room type.");
-        }
+    public void setRoomType(RoomType roomType) {
+        this.roomType = Objects.requireNonNull(
+            roomType, "Room type cannot be null."
+        );
     }
 
     public void setRoomCharges(double roomCharges) { // holiday ey lerng tlai room jg oy staff input tv
-        if(roomCharges >= 0.00) {
-            this.roomCharges = roomCharges;
-        } else {
+        if (roomCharges < 0) {
             throw new IllegalArgumentException("Room charges cannot be negative.");
         }
+        this.roomCharges = roomCharges;
     }
 
     public void setNumberOfRooms(int numberOfRooms) {
@@ -58,71 +78,38 @@ public class Invoice {
     }
 
     public void setNumberOfNights(int numberOfNights) {
-        if(numberOfNights > 0) {
-            this.numberOfNights = numberOfNights;
-        } else {
-            throw new IllegalArgumentException("Number of nights cannot be negative or zero.");
+        if (numberOfNights <= 0) {
+            throw new IllegalArgumentException("Number of nights must be greater than zero.");
         }
+        this.numberOfNights = numberOfNights;
     }
 
     public void setNumberOfGuests(int numberOfGuests) {
-        if(numberOfGuests > 0) {
-            this.numberOfGuests = numberOfGuests;
-        } else {
-            throw new IllegalArgumentException("Number of guests cannot be negative or zero.");
+        if (numberOfGuests <= 0) {
+            throw new IllegalArgumentException("Number of guests must be greater than zero.");
         }
+        this.numberOfGuests = numberOfGuests;
     }
 
-    public void setExtraPersonCharge(int numberOfGuests, String typeOfRoom) {
-        int includedGuests = 0;
-        switch(typeOfRoom) {
-            case "Single":
-                includedGuests = 1;
-                break;
-            case "Double":
-                includedGuests = 2;
-                break;
-            case "Triple":
-                includedGuests = 3;
-                break;
-        }
-        if(numberOfGuests > includedGuests) {
-            this.extraPersonCharge = (numberOfGuests - includedGuests) * 10.00; // $10 per extra person
-        } else {
-            this.extraPersonCharge = 0.00;
-        }
+    public void markAsPaid() {
+        this.isPaid = true;
     }
 
-    public void setDiscount(double totalAmount) {
-        if(discount >= 0.00) {
-            this.discount = discount;
-        } else {
-            throw new IllegalArgumentException("Discount cannot be negative.");
-        }
+    public double calculateExtraPersonCharge() {
+        int extraGuests = Math.max(0, numberOfGuests - roomType.getIncludedGuests());
+        return extraGuests * EXTRA_PERSON_FEE;
     }
 
-    public void setTotalAmount(double totalAmount) {
-        if(totalAmount >= 0.00) {
-            this.totalAmount = (roomCharges * numberOfRooms * numberOfNights) + extraPersonCharge - discount;
-        } else {
-            throw new IllegalArgumentException("Total amount cannot be negative.");
-        }
-    }
-
-    public void setIsPaid(boolean isPaid) {
-        if(isPaid == true || isPaid == false) {
-            this.isPaid = isPaid;
-        } else {
-            throw new IllegalArgumentException("Invalid payment status.");
-        }
+    public double calculateTotalAmount() {
+        return (roomCharges * numberOfRooms * numberOfNights) + calculateExtraPersonCharge();
     }
 
     public String getInvoiceId() {
         return invoiceId;
     }
 
-    public String getTypeOfRoom() {
-        return typeOfRoom;
+    public RoomType getRoomType() {
+        return roomType;
     }
 
     public double getRoomCharges() {
@@ -141,19 +128,7 @@ public class Invoice {
         return numberOfGuests;
     }
 
-    public double getExtraPersonCharge() {
-        return extraPersonCharge;
-    }
-
-    public double getDiscount() {
-        return discount;
-    }
-
-    public double getTotalAmount() {
-        return totalAmount;
-    }
-
-    public boolean getIsPaid() {
+    public boolean IsPaid() {
         return isPaid;
     }
     
