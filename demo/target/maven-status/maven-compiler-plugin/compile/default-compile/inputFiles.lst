@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 d:\hotel_management_system\demo\src\main\java\hotel\javabeans\App.java
 d:\hotel_management_system\demo\src\main\java\hotel\javabeans\Invoice.java
 d:\hotel_management_system\demo\src\main\java\hotel\javabeans\LoginDemo.java
@@ -8,3 +9,12 @@ d:\hotel_management_system\demo\src\main\java\hotel\javabeans\Login.java
 d:\hotel_management_system\demo\src\main\java\hotel\javabeans\Room.java
 d:\hotel_management_system\demo\src\main\java\hotel\javabeans\Staff.java
 d:\hotel_management_system\demo\src\main\java\hotel\javabeans\Guest.java
+=======
+H:\Term2-Year2\Java(OOP)\hotel_management_system\demo\src\main\java\hotel\javabeans\Room.java
+H:\Term2-Year2\Java(OOP)\hotel_management_system\demo\src\main\java\hotel\javabeans\Staff.java
+H:\Term2-Year2\Java(OOP)\hotel_management_system\demo\src\main\java\hotel\javabeans\App.java
+H:\Term2-Year2\Java(OOP)\hotel_management_system\demo\src\main\java\hotel\javabeans\Payment.java
+H:\Term2-Year2\Java(OOP)\hotel_management_system\demo\src\main\java\hotel\javabeans\Guest.java
+H:\Term2-Year2\Java(OOP)\hotel_management_system\demo\src\main\java\hotel\javabeans\Invoice.java
+H:\Term2-Year2\Java(OOP)\hotel_management_system\demo\src\main\java\hotel\javabeans\Reservation.java
+>>>>>>> w2

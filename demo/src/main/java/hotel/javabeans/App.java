@@ -8,6 +8,7 @@ public class App
 {
     public static void main( String[] args )
     {
+<<<<<<< HEAD
         Scanner scan = new Scanner(System.in);
 
         //Reservation
@@ -42,6 +43,9 @@ public class App
 
         scan.close();
     }
+=======
+        
+>>>>>>> w2
 }
     
 
