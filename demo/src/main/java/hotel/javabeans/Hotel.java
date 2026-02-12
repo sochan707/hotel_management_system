@@ -40,6 +40,7 @@ public class Hotel {
             throw new IllegalArgumentException("Address cannot be null or empty.");
         }
     }
+    
     public String getHotelName() {
         return hotelName;
     }

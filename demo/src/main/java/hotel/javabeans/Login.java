@@ -21,9 +21,8 @@ public class Login {
         return username;
     }
     
-    public String getPassword() {
-        return password;
-    }
+    // REMOVED: getPassword() method for security reasons
+    // Passwords should never be retrievable
     
     public String getRole() {
         return role;

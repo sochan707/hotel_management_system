@@ -7,6 +7,7 @@ public class LoginDemo {
         Scanner scanner = new Scanner(System.in);
         
         // Create some sample login accounts
+        // NOTE: In production, load credentials from secure storage (database/encrypted config)
         Login staffLogin = new Login("admin", "admin123", Login.ROLE_STAFF);
         Login guestLogin = new Login("guest01", "guest123", Login.ROLE_GUEST);
         
@@ -39,7 +40,7 @@ public class LoginDemo {
             
         } else if(guestLogin.authenticate(username, password)) {
             currentUser = guestLogin;
-            System.out.println("\n Login successful!");
+            System.out.println("\n✓ Login successful!");
             System.out.println("Welcome, " + currentUser.getUsername());
             System.out.println("Role: " + currentUser.getRole());
             System.out.println(currentUser.getRolePermissions());
@@ -53,7 +54,7 @@ public class LoginDemo {
             }
             
         } else {
-            System.out.println("\n Login failed! Invalid username or password.");
+            System.out.println("\n✗ Login failed! Invalid username or password.");
         }
         
         // Example: Logout
