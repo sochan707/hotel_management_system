@@ -4,13 +4,20 @@ public abstract class Payment {
     protected String paymentId;
     protected double amountPaid;
     protected String paymentDate;
-    protected String paymentStatus;
+    protected PaymentStatus paymentStatus;
 
-    public Payment(String paymentId, double amountPaid, String paymentDate, String paymentStatus) {
+    public Payment(String paymentId, double amountPaid, String paymentDate, PaymentStatus paymentStatus) {
         setPaymentId(paymentId);
         setAmountPaid(amountPaid);
         setPaymentDate(paymentDate);
         setPaymentStatus(paymentStatus);
+    }
+
+    public enum PaymentStatus {
+        PENDING,
+        COMPLETED,
+        FAILED,
+        REFUNDED
     }
 
     public void setPaymentId(String paymentId) {
@@ -37,8 +44,12 @@ public abstract class Payment {
         }
     }
 
-    public void setPaymentStatus(String paymentStatus) { //DEFINE PAYMENT STATUS LATER CUZ I DONT KNOW WHAT IT IS RN
-        this.paymentStatus = paymentStatus;
+    public void setPaymentStatus(PaymentStatus paymentStatus) {
+        if (paymentStatus != null) {
+            this.paymentStatus = paymentStatus;
+        } else {
+            throw new IllegalArgumentException("Payment status cannot be null.");
+        }
     }
 
     public String getPaymentId() {
@@ -53,7 +64,7 @@ public abstract class Payment {
         return paymentDate;
     }
 
-    public String getPaymentStatus() {
+    public PaymentStatus getPaymentStatus() {
         return paymentStatus;
     }
 
