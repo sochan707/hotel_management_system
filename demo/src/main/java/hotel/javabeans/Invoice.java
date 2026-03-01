@@ -1,5 +1,7 @@
 package hotel.javabeans;
 
+import hotel.javabeans.payment.Payment;
+
 public class Invoice {
     private String invoiceId;
     private String typeOfRoom;
@@ -12,7 +14,9 @@ public class Invoice {
     private double totalAmount;
     private boolean isPaid;
 
-    public Invoice(String invoiceId, String typeOfRoom, double roomCharges, int numberOfRooms, int numberOfNights, int numberOfGuests, double totalAmount, boolean isPaid) {
+    private Payment payment;
+
+    public Invoice(String invoiceId, String typeOfRoom, double roomCharges, int numberOfRooms, int numberOfNights, int numberOfGuests, double totalAmount, boolean isPaid, Payment payment) {
         setInvoiceId(invoiceId);
         setTypeOfRoom(typeOfRoom);
         setRoomCharges(roomCharges);
@@ -23,6 +27,7 @@ public class Invoice {
         setDiscount(totalAmount);
         setTotalAmount(totalAmount);
         setIsPaid(isPaid);
+        this.payment = payment;
     }
 
     public void setInvoiceId(String invoiceId) {
@@ -93,8 +98,20 @@ public class Invoice {
         }
     }
 
+    public void displayInvoiceDetails() {
+        System.out.println("Invoice ID: " + invoiceId);
+        System.out.println("Room Type: " + typeOfRoom);
+        System.out.println("Total Amount: $" + totalAmount);
+        System.out.println("Is Paid: " + (isPaid ? "Yes" : "No"));
+        if (payment != null) {
+            payment.displayPaymentDetails();
+        } else {
+            System.out.println("No payment information available.");
+        }
+    }
+
     public void setDiscount(double totalAmount) {
-        if(discount >= 0.00) {
+        if(discount >= 0.00 && discount <= 1.00) {
             this.discount = discount;
         } else {
             throw new IllegalArgumentException("Discount cannot be negative.");
@@ -155,6 +172,10 @@ public class Invoice {
 
     public boolean getIsPaid() {
         return isPaid;
+    }
+
+    public Payment getPayment() {
+        return payment;
     }
     
 }

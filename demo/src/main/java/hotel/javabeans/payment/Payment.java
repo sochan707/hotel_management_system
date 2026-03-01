@@ -1,16 +1,14 @@
-package hotel.javabeans;
+package hotel.javabeans.payment;
 
-public class Payment {
-    private String paymentId;
-    private double amountPaid;
-    private String paymentMethod;
-    private String paymentDate;
-    private String paymentStatus;
+public abstract class Payment {
+    protected String paymentId;
+    protected double amountPaid;
+    protected String paymentDate;
+    protected String paymentStatus;
 
-    public Payment(String paymentId, double amountPaid, String paymentMethod, String paymentDate, String paymentStatus) {
+    public Payment(String paymentId, double amountPaid, String paymentDate, String paymentStatus) {
         setPaymentId(paymentId);
         setAmountPaid(amountPaid);
-        setPaymentMethod(paymentMethod);
         setPaymentDate(paymentDate);
         setPaymentStatus(paymentStatus);
     }
@@ -31,14 +29,6 @@ public class Payment {
         }
     }
 
-    public void setPaymentMethod(String paymentMethod) {
-        if(paymentMethod != null && !paymentMethod.isEmpty()) {
-            this.paymentMethod = paymentMethod;
-        } else {
-            throw new IllegalArgumentException("Payment method cannot be null or empty."); //need to fix this later
-        }
-    }
-
     public void setPaymentDate(String paymentDate) {
         if(paymentDate != null && !paymentDate.isEmpty()) {
             this.paymentDate = paymentDate;
@@ -50,17 +40,13 @@ public class Payment {
     public void setPaymentStatus(String paymentStatus) { //DEFINE PAYMENT STATUS LATER CUZ I DONT KNOW WHAT IT IS RN
         this.paymentStatus = paymentStatus;
     }
-    
+
     public String getPaymentId() {
         return paymentId;
     }
     
     public double getAmountPaid() {
         return amountPaid;
-    }
-
-    public String getPaymentMethod() {
-        return paymentMethod;
     }
 
     public String getPaymentDate() {
@@ -70,4 +56,7 @@ public class Payment {
     public String getPaymentStatus() {
         return paymentStatus;
     }
+
+    public abstract void processPayment();
+    public abstract void displayPaymentDetails();
 }
