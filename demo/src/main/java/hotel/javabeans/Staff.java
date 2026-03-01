@@ -5,15 +5,11 @@ public class Staff {
     private String gender;
     private String phone;
     private String position;
-<<<<<<< HEAD
-    public static final String MALE = "Male";
-public static final String FEMALE = "Female";
-=======
     
     private static final String MALE = "Male";
     private static final String FEMALE = "Female";
->>>>>>> a66cb948943a8c2cad2b864ee1b9986ef75ddfff
-    
+    public static final String RECEPTIONIST = "Receptionist";
+    public static final String MANAGER= "Manager";    
     
     public Staff(String id, String name,String gender, String phone,String position) {
         setId(id);
