@@ -1,5 +1,5 @@
 package hotel.javabeans;
-public class Staff {
+public abstract class Staff {
     private String id;
     private String name;
     private String gender;
