@@ -24,274 +24,173 @@ public class Hotel {
         this.payments = new ArrayList<>();
     }
 
-    // Hotel name and address setters with validation
     public void setHotelName(String hotelName) {
-        if(hotelName != null && !hotelName.isEmpty()) {
-            this.hotelName = hotelName;
-        } else {
-            throw new IllegalArgumentException("Hotel name cannot be null or empty.");
-        }
+        if (hotelName != null && !hotelName.isEmpty()) this.hotelName = hotelName;
+        else throw new IllegalArgumentException("Hotel name cannot be null or empty.");
     }
 
     public void setAddress(String address) {
-        if(address != null && !address.isEmpty()) {
-            this.address = address;
-        } else {
-            throw new IllegalArgumentException("Address cannot be null or empty.");
-        }
-    }
-    
-    public String getHotelName() {
-        return hotelName;
+        if (address != null && !address.isEmpty()) this.address = address;
+        else throw new IllegalArgumentException("Address cannot be null or empty.");
     }
 
-    public String getAddress() {
-        return address;
-    }
+    public String getHotelName() { return hotelName; }
+    public String getAddress()   { return address; }
 
-    public List<Room> getRooms() {
-        return rooms;
-    }
-
-    public List<Reservation> getReservations() {
-        return reservations;
-    }
-
-    public List<Guest> getGuests() {
-        return guests;
-    }
-
-    public List<Staff> getStaffMembers() {
-        return staffMembers;
-    }
-
-    public List<Invoice> getInvoices() {
-        return invoices;
-    }
-
-    public List<Payment> getPayments() {
-        return payments;
-    }
-
-    // Room management methods
+    // --- Room ---
     public void addRoom(Room room) {
-        if(room != null) {
-            rooms.add(room);
-        } else {
-            throw new IllegalArgumentException("Room cannot be null.");
-        }
+        if (room != null) rooms.add(room);
+        else throw new IllegalArgumentException("Room cannot be null.");
     }
 
     public void removeRoom(Room room) {
-        if(room != null && rooms.contains(room)) {
-            rooms.remove(room);
-        } else {
-            throw new IllegalArgumentException("Room not found or is null.");
-        }
+        if (room != null && rooms.contains(room)) rooms.remove(room);
+        else throw new IllegalArgumentException("Room not found or is null.");
     }
 
     public Room findRoomByNumber(String roomNumber) {
-        for(Room room : rooms) {
-            if(room.getRoomNumber().equals(roomNumber)) {
-                return room;
-            }
-        }
+        for (Room room : rooms)
+            if (room.getRoomNumber().equals(roomNumber)) return room;
         return null;
     }
 
+    public List<Room> getRooms()          { return rooms; }
+
     public List<Room> getAvailableRooms() {
-        List<Room> availableRooms = new ArrayList<>();
-        for(Room room : rooms) {
-            if(room.getStatus().equals(Room.AVAILABLE)) {
-                availableRooms.add(room);
-            }
-        }
-        return availableRooms;
+        List<Room> available = new ArrayList<>();
+        for (Room room : rooms)
+            if (room.getStatus().equals(Room.AVAILABLE)) available.add(room);
+        return available;
     }
 
     public List<Room> getRoomsByType(String roomType) {
-        List<Room> roomsByType = new ArrayList<>();
-        for(Room room : rooms) {
-            if(room.getRoomType().equals(roomType)) {
-                roomsByType.add(room);
-            }
-        }
-        return roomsByType;
+        List<Room> byType = new ArrayList<>();
+        for (Room room : rooms)
+            if (room.getRoomType().equals(roomType)) byType.add(room);
+        return byType;
     }
 
-    // Reservation management methods
+    public int getTotalRooms() { return rooms.size(); }
+
+    // --- Reservation ---
     public void addReservation(Reservation reservation) {
-        if(reservation != null) {
-            reservations.add(reservation);
-        } else {
-            throw new IllegalArgumentException("Reservation cannot be null.");
-        }
+        if (reservation != null) reservations.add(reservation);
+        else throw new IllegalArgumentException("Reservation cannot be null.");
     }
 
     public void removeReservation(Reservation reservation) {
-        if(reservation != null && reservations.contains(reservation)) {
-            reservations.remove(reservation);
-        } else {
-            throw new IllegalArgumentException("Reservation not found or is null.");
-        }
+        if (reservation != null && reservations.contains(reservation)) reservations.remove(reservation);
+        else throw new IllegalArgumentException("Reservation not found or is null.");
     }
+
+    public List<Reservation> getReservations() { return reservations; }
 
     public List<Reservation> getReservationsByGuestName(String guestName) {
-        List<Reservation> guestReservations = new ArrayList<>();
-        for(Reservation reservation : reservations) {
-            if(reservation.getGuestName().equals(guestName)) {
-                guestReservations.add(reservation);
-            }
-        }
-        return guestReservations;
+        List<Reservation> result = new ArrayList<>();
+        for (Reservation r : reservations)
+            if (r.getGuestName().equals(guestName)) result.add(r);
+        return result;
     }
 
-    // Guest management methods
+    public int getTotalReservations() { return reservations.size(); }
+
+    // --- Guest ---
     public void addGuest(Guest guest) {
-        if(guest != null) {
-            guests.add(guest);
-        } else {
-            throw new IllegalArgumentException("Guest cannot be null.");
-        }
+        if (guest != null) guests.add(guest);
+        else throw new IllegalArgumentException("Guest cannot be null.");
     }
 
     public void removeGuest(Guest guest) {
-        if(guest != null && guests.contains(guest)) {
-            guests.remove(guest);
-        } else {
-            throw new IllegalArgumentException("Guest not found or is null.");
-        }
+        if (guest != null && guests.contains(guest)) guests.remove(guest);
+        else throw new IllegalArgumentException("Guest not found or is null.");
     }
 
     public Guest findGuestById(String id) {
-        for(Guest guest : guests) {
-            if(guest.getId().equals(id)) {
-                return guest;
-            }
-        }
+        for (Guest guest : guests)
+            if (guest.getId().equals(id)) return guest;
         return null;
     }
 
-    // Staff management methods
+    public List<Guest> getGuests()  { return guests; }
+    public int getTotalGuests()     { return guests.size(); }
+
+    // --- Staff ---
     public void addStaff(Staff staff) {
-        if(staff != null) {
-            staffMembers.add(staff);
-        } else {
-            throw new IllegalArgumentException("Staff cannot be null.");
-        }
+        if (staff != null) staffMembers.add(staff);
+        else throw new IllegalArgumentException("Staff cannot be null.");
     }
 
     public void removeStaff(Staff staff) {
-        if(staff != null && staffMembers.contains(staff)) {
-            staffMembers.remove(staff);
-        } else {
-            throw new IllegalArgumentException("Staff not found or is null.");
-        }
+        if (staff != null && staffMembers.contains(staff)) staffMembers.remove(staff);
+        else throw new IllegalArgumentException("Staff not found or is null.");
     }
 
     public Staff findStaffById(String id) {
-        for(Staff staff : staffMembers) {
-            if(staff.getId().equals(id)) {
-                return staff;
-            }
-        }
+        for (Staff staff : staffMembers)
+            if (staff.getId().equals(id)) return staff;
         return null;
     }
 
+    public List<Staff> getStaffMembers() { return staffMembers; }
+
     public List<Staff> getStaffByPosition(String position) {
-        List<Staff> staffByPosition = new ArrayList<>();
-        for(Staff staff : staffMembers) {
-            if(staff.getPosition().equalsIgnoreCase(position)) {
-                staffByPosition.add(staff);
-            }
-        }
-        return staffByPosition;
+        List<Staff> result = new ArrayList<>();
+        for (Staff staff : staffMembers)
+            if (staff.getPosition().equalsIgnoreCase(position)) result.add(staff);
+        return result;
     }
 
-    // Invoice management methods
+    public int getTotalStaff() { return staffMembers.size(); }
+
+    // --- Invoice ---
     public void addInvoice(Invoice invoice) {
-        if(invoice != null) {
-            invoices.add(invoice);
-        } else {
-            throw new IllegalArgumentException("Invoice cannot be null.");
-        }
+        if (invoice != null) invoices.add(invoice);
+        else throw new IllegalArgumentException("Invoice cannot be null.");
     }
 
     public void removeInvoice(Invoice invoice) {
-        if(invoice != null && invoices.contains(invoice)) {
-            invoices.remove(invoice);
-        } else {
-            throw new IllegalArgumentException("Invoice not found or is null.");
-        }
+        if (invoice != null && invoices.contains(invoice)) invoices.remove(invoice);
+        else throw new IllegalArgumentException("Invoice not found or is null.");
     }
 
     public Invoice findInvoiceById(String invoiceId) {
-        for(Invoice invoice : invoices) {
-            if(invoice.getInvoiceId().equals(invoiceId)) {
-                return invoice;
-            }
-        }
+        for (Invoice invoice : invoices)
+            if (invoice.getInvoiceId().equals(invoiceId)) return invoice;
         return null;
     }
+
+    public List<Invoice> getInvoices() { return invoices; }
 
     public List<Invoice> getUnpaidInvoices() {
-        List<Invoice> unpaidInvoices = new ArrayList<>();
-        for(Invoice invoice : invoices) {
-            if(!invoice.getIsPaid()) {
-                unpaidInvoices.add(invoice);
-            }
-        }
-        return unpaidInvoices;
-    }
-
-    public void addPayment(Payment payment) {
-        if(payment != null) {
-            payments.add(payment);
-        } else {
-            throw new IllegalArgumentException("Payment cannot be null.");
-        }
-    }
-
-    public void removePayment(Payment payment) {
-        if(payment != null && payments.contains(payment)) {
-            payments.remove(payment);
-        } else {
-            throw new IllegalArgumentException("Payment not found or is null.");
-        }
-    }
-
-    public Payment findPaymentById(String paymentId) {
-        for(Payment payment : payments) {
-            if(payment.getPaymentId().equals(paymentId)) {
-                return payment;
-            }
-        }
-        return null;
-    }
-
-    public int getTotalRooms() {
-        return rooms.size();
-    }
-
-    public int getTotalGuests() {
-        return guests.size();
-    }
-
-    public int getTotalStaff() {
-        return staffMembers.size();
-    }
-
-    public int getTotalReservations() {
-        return reservations.size();
+        List<Invoice> unpaid = new ArrayList<>();
+        for (Invoice invoice : invoices)
+            if (!invoice.getIsPaid()) unpaid.add(invoice);
+        return unpaid;
     }
 
     public double getTotalRevenue() {
-        double totalRevenue = 0.0;
-        for(Invoice invoice : invoices) {
-            if(invoice.getIsPaid()) {
-                totalRevenue += invoice.getTotalAmount();
-            }
-        }
-        return totalRevenue;
+        double total = 0.0;
+        for (Invoice invoice : invoices)
+            if (invoice.getIsPaid()) total += invoice.getTotalAmount();
+        return total;
     }
+
+    // --- Payment ---
+    public void addPayment(Payment payment) {
+        if (payment != null) payments.add(payment);
+        else throw new IllegalArgumentException("Payment cannot be null.");
+    }
+
+    public void removePayment(Payment payment) {
+        if (payment != null && payments.contains(payment)) payments.remove(payment);
+        else throw new IllegalArgumentException("Payment not found or is null.");
+    }
+
+    public Payment findPaymentById(String paymentId) {
+        for (Payment payment : payments)
+            if (payment.getPaymentId().equals(paymentId)) return payment;
+        return null;
+    }
+
+    public List<Payment> getPayments()  { return payments; }
 }
