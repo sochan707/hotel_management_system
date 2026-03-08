@@ -1,6 +1,6 @@
 package hotel.javabeans;
 
-import hotel.javabeans.payment.Payment;
+import hotel.javabeans.payment.Payment; 
 
 public class Invoice {
     private String invoiceId;
@@ -98,18 +98,6 @@ public class Invoice {
         }
     }
 
-    public void displayInvoiceDetails() {
-        System.out.println("Invoice ID: " + invoiceId);
-        System.out.println("Room Type: " + typeOfRoom);
-        System.out.println("Total Amount: $" + totalAmount);
-        System.out.println("Is Paid: " + (isPaid ? "Yes" : "No"));
-        if (payment != null) {
-            payment.displayPaymentDetails();
-        } else {
-            System.out.println("No payment information available.");
-        }
-    }
-
     public void setDiscount(double totalAmount) {
         if(discount >= 0.00 && discount <= 1.00) {
             this.discount = discount;
@@ -176,6 +164,23 @@ public class Invoice {
 
     public Payment getPayment() {
         return payment;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder(); //used to create multi-line string
+        sb.append("Invoice ID: ").append(invoiceId).append("\n");
+        sb.append("Room Type: ").append(typeOfRoom).append("\n");
+        sb.append("Total Amount: $").append(totalAmount).append("\n");
+        sb.append("Is Paid: ").append(isPaid ? "Yes" : "No").append("\n");
+
+        if (payment != null) {
+            sb.append(payment.toString()).append("\n");
+        } else {
+            sb.append("No payment information available.\n");
+        }
+
+        return sb.toString();
     }
     
 }
