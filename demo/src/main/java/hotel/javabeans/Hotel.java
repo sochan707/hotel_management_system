@@ -3,6 +3,9 @@ package hotel.javabeans;
 import java.util.ArrayList;
 import java.util.List;
 
+import Person.Guest;
+import Person.Staff;
+
 public class Hotel {
     private String hotelName;
     private String address;

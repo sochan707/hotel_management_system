@@ -1,18 +1,13 @@
-package hotel.javabeans;
+package Person;
 public class Guest {
     private String id;
     private String name;
     private String gender;
     private String phone;
-<<<<<<< HEAD
-    public static final String MALE = "Male";
-public static final String FEMALE = "Female";
-=======
     
     private static final String MALE = "Male";
     private static final String FEMALE = "Female";
     
->>>>>>> a66cb948943a8c2cad2b864ee1b9986ef75ddfff
     
     
     public Guest(String id, String name,String gender, String phone) {

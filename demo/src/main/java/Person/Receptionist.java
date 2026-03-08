@@ -1,5 +1,5 @@
-package hotel.javabeans;
-public abstract class Staff {
+package Person;
+public class Receptionist implements IStaff {
     private String id;
     private String name;
     private String gender;
@@ -8,10 +8,15 @@ public abstract class Staff {
     
     private static final String MALE = "Male";
     private static final String FEMALE = "Female";
-    public static final String RECEPTIONIST = "Receptionist";
-    public static final String MANAGER= "Manager";    
-    
-    public Staff(String id, String name,String gender, String phone,String position) {
+      
+     @Override
+    public boolean can (String action) {
+        
+        return true;
+    }
+
+
+    public Receptionist (String id, String name,String gender, String phone,String position) {
         setId(id);
         setName(name);
         setGender(gender);
@@ -87,6 +92,18 @@ public abstract class Staff {
          } else {
              throw new IllegalArgumentException("Position cannot be null or empty.");
          }
+          // ====== toString ======
+    @Override
+    public String toString() {
+        return "Staff{" +
+                "staffId='" + Id + '\'' +
+                ", fullName='" + Name + '\'' +
+                ", phone='" + phone + '\'' +
+                ", gender='" + gender + '\'' +
+                ", position='" + position + '\'' +
+                
+                '}';
+    }
     }
     
    
