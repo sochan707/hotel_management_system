@@ -2,44 +2,35 @@ package hotel.javabeans;
 
 import java.time.LocalDate;
 
-public class Reservation {
-    private String guestName;
-    private String phone;
-    private int roomNumber;
-    private LocalDate checkInDate;
-    private LocalDate checkOutDate;
-    private double bookingPrice;
+public class Reservation extends Booking {
 
-    public Reservation(String guestName, String phone, int roomNumber, LocalDate checkInDate, LocalDate checkOutDate, double bookingPrice){
-        this.guestName = guestName;
-        this.phone = phone;
-        this.roomNumber = roomNumber;
-        this.checkInDate = checkInDate;
-        this.checkOutDate = checkOutDate;
-        this.bookingPrice = bookingPrice;
+    public Reservation(String guestName, String phone, int roomNumber, LocalDate checkInDate, LocalDate checkOutDate, double bookingPrice) {
+        super(guestName, phone, roomNumber, checkInDate, checkOutDate, bookingPrice);
     }
 
-    public String getGuestName(){
-        return guestName;
+    // Override abstract method
+    @Override
+    public double calculateTotalPrice() {
+        double tax = bookingPrice * TAX_RATE;
+        return bookingPrice + tax;
     }
 
-    public String getPhone(){
-        return phone;
+    // Method overloading example: discount for longer stay
+    public double calculateTotalPrice(double discountRate) {
+        double total = calculateTotalPrice();
+        return total - (total * discountRate);
     }
 
-    public int getRoomNumber(){
-        return roomNumber;
-    }
-
-    public LocalDate getCheckInDate(){
-        return checkInDate;
-    }
-
-    public LocalDate getCheckOutDate(){
-        return checkOutDate;
-    }
-
-    public double getBookingPrice(){
-        return bookingPrice;
+    @Override
+    public String toString() {
+        return "Reservation{" +
+                "guestName='" + guestName + '\'' +
+                ", phone='" + phone + '\'' +
+                ", roomNumber=" + roomNumber +
+                ", checkInDate=" + checkInDate +
+                ", checkOutDate=" + checkOutDate +
+                ", bookingPrice=" + bookingPrice +
+                ", totalPrice=" + calculateTotalPrice() +
+                '}';
     }
 }
