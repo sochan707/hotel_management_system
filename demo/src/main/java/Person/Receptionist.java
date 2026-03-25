@@ -9,9 +9,8 @@ public class Receptionist implements IStaff {
     private static final String MALE = "Male";
     private static final String FEMALE = "Female";
       
-     @Override
+    @Override
     public boolean can (String action) {
-        
         return true;
     }
 
@@ -21,10 +20,7 @@ public class Receptionist implements IStaff {
         setName(name);
         setGender(gender);
         setPhone(phone);
-        setPosition(position);
-        
-        
-        
+        setPosition(position);   
     }
     
     public String getId() {
@@ -58,7 +54,7 @@ public class Receptionist implements IStaff {
         if(name != null && !name.isEmpty()) {
             this.name = name;
         } else {
-            throw new IllegalArgumentException("taff name cannot be null or empty.");
+            throw new IllegalArgumentException("Staff name cannot be null or empty.");
         }
     }
     public void setGender(String gender) {
@@ -93,18 +89,21 @@ public class Receptionist implements IStaff {
              throw new IllegalArgumentException("Position cannot be null or empty.");
          }
           // ====== toString ======
+    }
+
     @Override
     public String toString() {
         return "Staff{" +
-                "staffId='" + Id + '\'' +
-                ", fullName='" + Name + '\'' +
+                "staffId='" + id + '\'' +
+                ", fullName='" + name + '\'' +
                 ", phone='" + phone + '\'' +
                 ", gender='" + gender + '\'' +
                 ", position='" + position + '\'' +
                 
                 '}';
     }
-    }
-    
-   
+
+    public boolean isActive() {
+        return true;
+    };
 }

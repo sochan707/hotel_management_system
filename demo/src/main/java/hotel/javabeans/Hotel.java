@@ -5,6 +5,7 @@ import java.util.List;
 
 import Person.Guest;
 import Person.Staff;
+import hotel.javabeans.payment.Payment;
 
 public class Hotel {
     private String hotelName;

@@ -9,9 +9,8 @@ public class Manager implements IStaff{
     private static final String MALE = "Male";
     private static final String FEMALE = "Female";
        
-     @Override
+    @Override
     public boolean can (String action) {
-        
         return true;
     }
     public Manager(String id, String name,String gender, String phone,String position) {
@@ -20,9 +19,6 @@ public class Manager implements IStaff{
         setGender(gender);
         setPhone(phone);
         setPosition(position);
-        
-        
-        
     }
     
     public String getId() {
@@ -90,19 +86,25 @@ public class Manager implements IStaff{
          } else {
              throw new IllegalArgumentException("Position cannot be null or empty.");
          }
-          // ====== toString ======
+        
+    }
+
+  // ====== toString ======
     @Override
     public String toString() {
         return "Staff{" +
-                "staffId='" + Id + '\'' +
-                ", fullName='" + Name + '\'' +
+                "staffId='" + id + '\'' +
+                ", fullName='" + name + '\'' +
                 ", phone='" + phone + '\'' +
                 ", gender='" + gender + '\'' +
                 ", position='" + position + '\'' +
                 
                 '}';
     }
-    }
+
+    public boolean isActive() {
+        return true;
+    };
     
    
 }

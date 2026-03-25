@@ -86,19 +86,17 @@ public abstract class Staff {
          } else {
              throw new IllegalArgumentException("Position cannot be null or empty.");
          }
-          // ====== toString ======
+    }
+    
+             // ====== toString ======
     @Override
     public String toString() {
         return "Staff{" +
-                "staffId='" + Id + '\'' +
-                ", fullName='" + Name + '\'' +
+                "staffId='" + id + '\'' +
+                ", fullName='" + name + '\'' +
                 ", phone='" + phone + '\'' +
                 ", gender='" + gender + '\'' +
                 ", position='" + position + '\'' +
-                
                 '}';
     }
-    }
-    
-   
 }

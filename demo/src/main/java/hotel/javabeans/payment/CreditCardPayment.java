@@ -1,12 +1,14 @@
 package hotel.javabeans.payment;
 
+import hotel.javabeans.payment.Payment.PaymentStatus;
+
 public class CreditCardPayment extends Payment implements PaymentMethods {
     private String cardNumber;
     private String cardHolderName;
     private String cardExpiryDate;
 
     public CreditCardPayment(String paymentId, double amountPaid, String paymentDate, String paymentStatus, String cardNumber, String cardHolderName, String cardExpiryDate) {
-        super(paymentId, amountPaid, paymentDate, paymentStatus);
+        super(paymentId, amountPaid, paymentDate, PaymentStatus.valueOf(paymentStatus));
         this.cardNumber = cardNumber;
         this.cardHolderName = cardHolderName;
         this.cardExpiryDate = cardExpiryDate;
