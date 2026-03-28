@@ -1,7 +1,5 @@
 package hotel.javabeans.payment;
 
-import hotel.javabeans.payment.Payment.PaymentStatus;
-
 public class CashPayment extends Payment implements PaymentMethods{
     public CashPayment(String paymentId, double amountPaid, String paymentDate, String paymentStatus) {
         super(paymentId, amountPaid, paymentDate, PaymentStatus.valueOf(paymentStatus));

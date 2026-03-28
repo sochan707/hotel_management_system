@@ -1,7 +1,5 @@
 package hotel.javabeans.payment;
 
-import hotel.javabeans.payment.Payment.PaymentStatus;
-
 public class CreditCardPayment extends Payment implements PaymentMethods {
     private String cardNumber;
     private String cardHolderName;
