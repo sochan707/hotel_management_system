@@ -1,12 +1,14 @@
 package hotel.javabeans.payment;
 
+import java.time.LocalDate;
+
 public class CreditCardPayment extends Payment implements PaymentMethods {
     private String cardNumber;
     private String cardHolderName;
     private String cardExpiryDate;
 
-    public CreditCardPayment(String paymentId, double amountPaid, String paymentDate, String paymentStatus, String cardNumber, String cardHolderName, String cardExpiryDate) {
-        super(paymentId, amountPaid, paymentDate, PaymentStatus.valueOf(paymentStatus));
+    public CreditCardPayment(String paymentId, double amountPaid, LocalDate paymentDate, PaymentStatus paymentStatus, String cardNumber, String cardHolderName, String cardExpiryDate) {
+        super(paymentId, amountPaid, paymentDate, paymentStatus);
         this.cardNumber = cardNumber;
         this.cardHolderName = cardHolderName;
         this.cardExpiryDate = cardExpiryDate;
@@ -32,12 +34,10 @@ public class CreditCardPayment extends Payment implements PaymentMethods {
     }
 
     @Override
-    public void displayPaymentDetails() {
-        System.out.println("Payment ID: " + paymentId);
-        System.out.println("Amount Paid: $" + amountPaid);
-        System.out.println("Payment Date: " + paymentDate);
-        System.out.println("Payment Status: " + paymentStatus);
-        System.out.println("Card Holder: " + cardHolderName);
-        System.out.println("Card Expiry Date: " + cardExpiryDate);
+    public String toString() {
+        return super.toString() + '\n' +
+        "Card holder's Name: " + cardHolderName + '\n' +
+        "Card expiry date: " + cardExpiryDate + '\n' +
+        "Card Number: " + cardNumber;
     }
 }

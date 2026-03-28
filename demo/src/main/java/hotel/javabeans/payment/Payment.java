@@ -1,12 +1,14 @@
 package hotel.javabeans.payment;
 
+import java.time.LocalDate;
+
 public abstract class Payment {
     protected String paymentId;
     protected double amountPaid;
-    protected String paymentDate;
+    protected LocalDate paymentDate;
     protected PaymentStatus paymentStatus;
 
-    public Payment(String paymentId, double amountPaid, String paymentDate, PaymentStatus paymentStatus) {
+    public Payment(String paymentId, double amountPaid, LocalDate paymentDate, PaymentStatus paymentStatus) {
         setPaymentId(paymentId);
         setAmountPaid(amountPaid);
         setPaymentDate(paymentDate);
@@ -36,12 +38,14 @@ public abstract class Payment {
         }
     }
 
-    public void setPaymentDate(String paymentDate) {
-        if(paymentDate != null && !paymentDate.isEmpty()) {
-            this.paymentDate = paymentDate;
-        } else {
-            throw new IllegalArgumentException("Payment date cannot be null or empty."); //need to fix this later too
+    public void setPaymentDate(LocalDate paymentDate) {
+        if (paymentDate == null) {
+            throw new IllegalArgumentException("Payment date cannot be null.");
         }
+        if (paymentDate.isAfter(LocalDate.now())) {
+            throw new IllegalArgumentException("Payment date cannot be in the future.");
+        }
+        this.paymentDate = paymentDate;
     }
 
     public void setPaymentStatus(PaymentStatus paymentStatus) {
@@ -60,7 +64,7 @@ public abstract class Payment {
         return amountPaid;
     }
 
-    public String getPaymentDate() {
+    public LocalDate getPaymentDate() {
         return paymentDate;
     }
 
@@ -68,6 +72,17 @@ public abstract class Payment {
         return paymentStatus;
     }
 
-    public abstract void processPayment();
-    public abstract void displayPaymentDetails();
+    public abstract void processPayment();    
+
+    @Override
+    public String toString() {
+        return "Payment:" + '\n' +
+                "--------------------------------------------" + '\n' +
+                "paymentId: " + paymentId + '\n' +
+                "amountPaid: " + amountPaid + '\n' +
+                "paymentDate: " + getPaymentDate() + '\n' +
+                "paymentStatus: " + paymentStatus + '\n' + 
+                "--------------------------------------------";
+    }
+    
 }

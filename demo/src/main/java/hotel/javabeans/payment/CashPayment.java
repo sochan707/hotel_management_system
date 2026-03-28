@@ -1,8 +1,10 @@
 package hotel.javabeans.payment;
 
+import java.time.LocalDate;
+
 public class CashPayment extends Payment implements PaymentMethods{
-    public CashPayment(String paymentId, double amountPaid, String paymentDate, String paymentStatus) {
-        super(paymentId, amountPaid, paymentDate, PaymentStatus.valueOf(paymentStatus));
+    public CashPayment(String paymentId, double amountPaid, LocalDate paymentDate, PaymentStatus paymentStatus) {
+        super(paymentId, amountPaid, paymentDate, paymentStatus);
     }
 
     @Override
@@ -19,13 +21,5 @@ public class CashPayment extends Payment implements PaymentMethods{
     public double calculateTotal() {
         return amountPaid;
     }
-
-    @Override
-    public void displayPaymentDetails() {
-        System.out.println("Payment ID: " + paymentId);
-        System.out.println("Amount Paid: $" + amountPaid);
-        System.out.println("Payment Date: " + paymentDate);
-        System.out.println("Payment Status: " + paymentStatus);
-        System.out.println("Payment Method: Cash");
-    }
+    
 }
