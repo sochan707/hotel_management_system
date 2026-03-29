@@ -21,5 +21,12 @@ public class CashPayment extends Payment implements PaymentMethods{
     public double calculateTotal() {
         return amountPaid;
     }
+
+    @Override
+    public String toString() {
+        return super.toString();
+    }
+
+    
     
 }
