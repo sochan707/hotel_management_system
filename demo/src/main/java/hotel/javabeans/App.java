@@ -8,7 +8,7 @@ public class App
     public static void main( String[] args )
     {
         CreditCardPayment payment = new CreditCardPayment(
-            "12345", 
+            "00000", 
             100.0, 
             LocalDate.now(), 
             PaymentStatus.COMPLETED,

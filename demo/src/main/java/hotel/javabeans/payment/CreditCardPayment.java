@@ -11,7 +11,7 @@ public class CreditCardPayment extends Payment implements PaymentMethods {
         super(paymentId, amountPaid, paymentDate, paymentStatus);
         setCardNumber(cardNumber);
         setCardHolderName(cardHolderName);
-        this.cardExpiryDate = cardExpiryDate;
+        setCardExpiryDate(cardExpiryDate);
     }
 
     public void setCardNumber(String cardNumber) {
