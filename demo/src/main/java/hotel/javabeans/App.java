@@ -12,19 +12,19 @@ public class App
             100.0, 
             LocalDate.now(), 
             PaymentStatus.COMPLETED,
-            "4111111111111111", 
-            "John Doe", 
+            "00001111", 
+            "thamus", 
             "12/25"
         );
 
-        CreditCardPayment payment2Payment = new CreditCardPayment(
+        CreditCardPayment payment2 = new CreditCardPayment(
             "12345", 
             100.0, 
             LocalDate.now(), 
             PaymentStatus.COMPLETED,
-            "4111111111111111", 
-            "John Doe", 
-            "12/25"
+            "00002222", 
+            "kimmy", 
+            "2/08"
         );
 
         // Calculate the total payment
@@ -33,6 +33,7 @@ public class App
 
         // Display payment details
         System.out.println(payment);
+        System.out.println(payment2);
     }
 }
     

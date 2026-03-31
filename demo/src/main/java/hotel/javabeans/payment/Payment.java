@@ -9,14 +9,19 @@ public abstract class Payment {
     protected PaymentStatus paymentStatus;
 
     public Payment(String paymentId, double amountPaid, LocalDate paymentDate, PaymentStatus paymentStatus) {
-        try {
-            setPaymentId(paymentId);
-            setAmountPaid(amountPaid);
-            setPaymentDate(paymentDate);
-            setPaymentStatus(paymentStatus);
-        } catch (IllegalArgumentException e) {
-            throw new PaymentException("Payment validation failed: " + e.getMessage());
-        }
+        setPaymentId(paymentId);
+        setAmountPaid(amountPaid);
+        setPaymentDate(paymentDate);
+        setPaymentStatus(paymentStatus);
+        
+        // try {
+        //     setPaymentId(paymentId);
+        //     setAmountPaid(amountPaid);
+        //     setPaymentDate(paymentDate);
+        //     setPaymentStatus(paymentStatus);
+        // } catch (IllegalArgumentException e) {
+        //     // throw new PaymentException("Payment validation failed: " + e.getMessage());
+        // }
     }
 
     public enum PaymentStatus {
