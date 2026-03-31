@@ -26,7 +26,4 @@ public class CashPayment extends Payment implements PaymentMethods{
     public String toString() {
         return super.toString();
     }
-
-    
-    
 }
