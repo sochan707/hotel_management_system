@@ -9,19 +9,10 @@ public abstract class Payment {
     protected PaymentStatus paymentStatus;
 
     public Payment(String paymentId, double amountPaid, LocalDate paymentDate, PaymentStatus paymentStatus) {
-        setPaymentId(paymentId);
-        setAmountPaid(amountPaid);
-        setPaymentDate(paymentDate);
-        setPaymentStatus(paymentStatus);
-        
-        // try {
-        //     setPaymentId(paymentId);
-        //     setAmountPaid(amountPaid);
-        //     setPaymentDate(paymentDate);
-        //     setPaymentStatus(paymentStatus);
-        // } catch (IllegalArgumentException e) {
-        //     // throw new PaymentException("Payment validation failed: " + e.getMessage());
-        // }
+        this.paymentId = validateString(paymentId);
+        this.amountPaid = validateAmountPay(amountPaid);
+        this.paymentDate = validateDate(paymentDate);
+        this.paymentStatus = validatePaymentStatus(paymentStatus);
     }
 
     public enum PaymentStatus {
@@ -31,38 +22,28 @@ public abstract class Payment {
         REFUNDED
     }
 
-    public void setPaymentId(String paymentId) {
-        if(paymentId != null && !paymentId.isEmpty()) {
-            this.paymentId = paymentId;
-        } else {
+    private String validateString(String value) {
+        if (value == null || value.isEmpty()) 
             throw new IllegalArgumentException("Payment ID cannot be null or empty.");
-        }
+        return value;
     }
 
-    public void setAmountPaid(double amountPaid) {
-        if(amountPaid >= 0) {
-            this.amountPaid = amountPaid;
-        } else {
+    private double validateAmountPay(double amount){
+        if (amount < 0) 
             throw new IllegalArgumentException("Amount paid cannot be negative.");
-        }
+        return amount;
     }
 
-    public void setPaymentDate(LocalDate paymentDate) {
-        if (paymentDate == null) {
-            throw new IllegalArgumentException("Payment date cannot be null.");
-        }
-        if (paymentDate.isAfter(LocalDate.now())) {
-            throw new IllegalArgumentException("Payment date cannot be in the future.");
-        }
-        this.paymentDate = paymentDate;
+    private LocalDate validateDate(LocalDate date) {
+        if (date == null || date.isAfter(LocalDate.now())) 
+            throw new IllegalArgumentException("Invalid payment date.");
+        return date;
     }
 
-    public void setPaymentStatus(PaymentStatus paymentStatus) {
-        if (paymentStatus != null) {
-            this.paymentStatus = paymentStatus;
-        } else {
+    private PaymentStatus validatePaymentStatus(PaymentStatus paymentStatus){
+        if (paymentStatus == null) 
             throw new IllegalArgumentException("Payment status cannot be null.");
-        }
+        return paymentStatus;
     }
 
     public String getPaymentId() {
@@ -85,13 +66,8 @@ public abstract class Payment {
 
     @Override
     public String toString() {
-        return "Payment:" + '\n' +
-                "--------------------------------------------" + '\n' +
-                "paymentId: " + paymentId + '\n' +
-                "amountPaid: " + amountPaid + '\n' +
-                "paymentDate: " + getPaymentDate() + '\n' +
-                "paymentStatus: " + paymentStatus + '\n' + 
-                "--------------------------------------------";
+        return String.format("Payment:%n--------------------------------------------%npaymentId: %s%namountPaid: %.2f%npaymentDate: %s%npaymentStatus: %s%n--------------------------------------------",
+                             paymentId, amountPaid, paymentDate, paymentStatus);
     }
     
 }
