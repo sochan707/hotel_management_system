@@ -3,34 +3,30 @@ package hotel.javabeans.payment;
 import java.time.LocalDate;
 
 public class CreditCardPayment extends Payment implements PaymentMethods {
-    private String cardNumber;
-    private String cardHolderName;
-    private String cardExpiryDate;
+    private final String cardNumber;
+    private final String cardHolderName;
+    private final String cardExpiryDate;
 
     public CreditCardPayment(String paymentId, double amountPaid, LocalDate paymentDate, PaymentStatus paymentStatus, String cardNumber, String cardHolderName, String cardExpiryDate) {
         super(paymentId, amountPaid, paymentDate, paymentStatus);
-        setCardNumber(cardNumber);
-        setCardHolderName(cardHolderName);
-        setCardExpiryDate(cardExpiryDate);
+        this.cardNumber = validationCardNumber(cardNumber);
+        this.cardHolderName = validateCardHolderName(cardHolderName);
+        this.cardExpiryDate = validateCardExpiryDate(cardExpiryDate);
     }
 
-    public void setCardNumber(String cardNumber) {
-        if(cardNumber == null || cardNumber.isEmpty() || cardNumber.length() < 10){
+    private String validationCardNumber(String cardNumber){
+        if(cardNumber == null || cardNumber.isEmpty() || cardNumber.length() != 10)
             throw new IllegalArgumentException("Invalid card number!");
-        } else {
-            this.cardNumber = cardNumber;
-        }
+        return cardNumber;
     }
 
-    public void setCardHolderName(String cardHolderName) {
-        if(cardHolderName.isEmpty() && cardHolderName.length() < 5){
-            throw new IllegalArgumentException("Invalid input!");
-        } else {
-            this.cardHolderName = cardHolderName;
-        }
+    private String validateCardHolderName(String cardHolderName){
+        if(cardHolderName == null || cardHolderName.isEmpty() || cardHolderName.length() < 5)
+            throw new IllegalArgumentException("Invalid card holder name!");
+        return cardHolderName;
     }
 
-    public void setCardExpiryDate(String cardExpiryDate) {
+    private String validateCardExpiryDate (String cardExpiryDate) {
         if (cardExpiryDate == null || !cardExpiryDate.matches("(0[1-9]|1[0-2])/\\d{2}")) {
             throw new IllegalArgumentException("Invalid expiry date format! Use MM/YY.");
         }
@@ -48,7 +44,7 @@ public class CreditCardPayment extends Payment implements PaymentMethods {
             throw new IllegalArgumentException("Card has expired!");
         }
 
-        this.cardExpiryDate = cardExpiryDate;
+        return cardExpiryDate;
     }
 
     @Override
@@ -58,7 +54,7 @@ public class CreditCardPayment extends Payment implements PaymentMethods {
 
     @Override
     public void validatePayment() {
-        if (cardNumber != null && cardNumber.length() == 16) {
+        if (cardNumber != null && cardNumber.length() == 10) {
             System.out.println("Credit card validation successful.");
         } else {
             System.out.println("Invalid credit card number.");
@@ -72,9 +68,7 @@ public class CreditCardPayment extends Payment implements PaymentMethods {
 
     @Override
     public String toString() {
-        return super.toString() + '\n' +
-        "Card holder's Name: " + cardHolderName + '\n' +
-        "Card expiry date: " + cardExpiryDate + '\n' +
-        "Card Number: " + cardNumber + '\n';
+        return String.format("%s%nCard holder's Name: %s%nCard expiry date: %s%nCard Number: %s%n", 
+                             super.toString(), cardHolderName, cardExpiryDate, cardNumber);
     }
 }
