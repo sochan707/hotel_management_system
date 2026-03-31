@@ -12,9 +12,9 @@ public class App
             100.0, 
             LocalDate.now(), 
             PaymentStatus.COMPLETED,
-            "00001111", 
+            "0000011111", 
             "thamus", 
-            "12/25"
+            "12/29"
         );
 
         CreditCardPayment payment2 = new CreditCardPayment(
@@ -22,9 +22,9 @@ public class App
             100.0, 
             LocalDate.now(), 
             PaymentStatus.COMPLETED,
-            "00002222", 
+            "0000022222", 
             "kimmy", 
-            "2/08"
+            "02/28"
         );
 
         // Calculate the total payment

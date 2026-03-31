@@ -15,7 +15,7 @@ public class CreditCardPayment extends Payment implements PaymentMethods {
     }
 
     public void setCardNumber(String cardNumber) {
-        if(cardNumber == null || cardNumber.isEmpty() || cardNumber.length() < 15){
+        if(cardNumber == null || cardNumber.isEmpty() || cardNumber.length() < 10){
             throw new IllegalArgumentException("Invalid card number!");
         } else {
             this.cardNumber = cardNumber;
@@ -23,7 +23,7 @@ public class CreditCardPayment extends Payment implements PaymentMethods {
     }
 
     public void setCardHolderName(String cardHolderName) {
-        if(cardHolderName.isEmpty() && cardHolderName.length() < 15){
+        if(cardHolderName.isEmpty() && cardHolderName.length() < 5){
             throw new IllegalArgumentException("Invalid input!");
         } else {
             this.cardHolderName = cardHolderName;
@@ -75,6 +75,6 @@ public class CreditCardPayment extends Payment implements PaymentMethods {
         return super.toString() + '\n' +
         "Card holder's Name: " + cardHolderName + '\n' +
         "Card expiry date: " + cardExpiryDate + '\n' +
-        "Card Number: " + cardNumber;
+        "Card Number: " + cardNumber + '\n';
     }
 }
