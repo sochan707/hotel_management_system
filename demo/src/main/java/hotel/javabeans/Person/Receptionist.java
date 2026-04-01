@@ -1,4 +1,4 @@
-package Person;
+package hotel.javabeans.Person;
 public class Receptionist implements IStaff {
     private String id;
     private String name;

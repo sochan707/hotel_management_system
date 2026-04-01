@@ -1,8 +1,9 @@
-package Person;
+package hotel.javabeans.Person;
 
 public interface IStaff {
     String getId();
-    String getName();
+    String getFirstName();
+    String getLastName();
     String getGender();
     String getPhone();
     String getPosition();

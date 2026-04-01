@@ -1,21 +1,24 @@
-package Person;
-public abstract class Staff {
-    private String id;
-    private String name;
-    private String gender;
-    private String phone;
-    private String position;
+package hotel.javabeans.Person;
+
+public abstract class Person {
+    protected String id;
+    protected String firstName;
+    protected String lastName;
+    protected String gender;
+    protected String phone;
+  
     
-    private static final String MALE = "Male";
-    private static final String FEMALE = "Female";
+    public static final String MALE = "Male";
+    public static final String FEMALE = "Female";
        
     
-    public Staff(String id, String name,String gender, String phone,String position) {
+    public Person(String id, String firstName, String lastName,String gender, String phone) {
         setId(id);
+        setName(name);
         setName(name);
         setGender(gender);
         setPhone(phone);
-        setPosition(position);
+    
         
         
         
@@ -25,10 +28,14 @@ public abstract class Staff {
         return id;
     }
     
-    public String getName() {
-        return name;
+    public String getFirstName() {
+        return firstName;
     }
     
+    public String getLastName() {
+        return lastName;
+    }
+
     public String getGender() {
         return gender;
     }
@@ -40,7 +47,7 @@ public abstract class Staff {
         return position;
     }
     
-     public void setId(String id) {
+     protected void setId(String id) {
         if(id != null && !id.isEmpty()) {
             this.id = id;
         } else {
@@ -48,14 +55,21 @@ public abstract class Staff {
         }
     }
     
-    public void setName(String name) {
+    protected void setFirstName(String name) {
         if(name != null && !name.isEmpty()) {
             this.name = name;
         } else {
-            throw new IllegalArgumentException("taff name cannot be null or empty.");
+            throw new IllegalArgumentException("Firstname cannot be null or empty.");
         }
     }
-    public void setGender(String gender) {
+    protected void setLastame(String name) {
+        if(name != null && !name.isEmpty()) {
+            this.name = name;
+        } else {
+            throw new IllegalArgumentException("Lastname cannot be null or empty.");
+        }
+    }
+    protected void setGender(String gender) {
          if(gender != null && !gender.isEmpty()) {
             if(gender.equalsIgnoreCase(MALE) || gender.equalsIgnoreCase(FEMALE)) {
                 this.gender = gender;
@@ -67,7 +81,7 @@ public abstract class Staff {
         }
     }
     
-    public void setPhone(String phone) {
+    protected void setPhone(String phone) {
          if(phone != null && !phone.isEmpty()) {
             if(phone.length() >= 9 && phone.length() <= 15) {
                 this.phone = phone;
@@ -79,24 +93,6 @@ public abstract class Staff {
         }
     }
     
-    public void setPosition(String position) {
-         if(position != null && !position.isEmpty()) {
 
-            this.position=position;
-         } else {
-             throw new IllegalArgumentException("Position cannot be null or empty.");
-         }
-    }
-    
-             // ====== toString ======
-    @Override
-    public String toString() {
-        return "Staff{" +
-                "staffId='" + id + '\'' +
-                ", fullName='" + name + '\'' +
-                ", phone='" + phone + '\'' +
-                ", gender='" + gender + '\'' +
-                ", position='" + position + '\'' +
-                '}';
-    }
+   
 }

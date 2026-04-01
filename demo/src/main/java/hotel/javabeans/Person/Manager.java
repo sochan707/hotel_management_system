@@ -1,25 +1,24 @@
-package Person;
-
-public abstract class Person {
-    protected String id;
-    protected String name;
-    protected String gender;
-    protected String phone;
-    protected String position;
+package hotel.javabeans.Person;
+public class Manager implements IStaff{
+    private String id;
+    private String name;
+    private String gender;
+    private String phone;
+    private String position;
     
-    protected static final String MALE = "Male";
-    protected static final String FEMALE = "Female";
+    private static final String MALE = "Male";
+    private static final String FEMALE = "Female";
        
-    
-    public Person(String id, String name,String gender, String phone,String position) {
+    @Override
+    public boolean can (String action) {
+        return true;
+    }
+    public Manager(String id, String name,String gender, String phone,String position) {
         setId(id);
         setName(name);
         setGender(gender);
         setPhone(phone);
         setPosition(position);
-        
-        
-        
     }
     
     public String getId() {
@@ -87,9 +86,10 @@ public abstract class Person {
          } else {
              throw new IllegalArgumentException("Position cannot be null or empty.");
          }
+        
     }
-    
-             // ====== toString ======
+
+  // ====== toString ======
     @Override
     public String toString() {
         return "Staff{" +
@@ -98,6 +98,13 @@ public abstract class Person {
                 ", phone='" + phone + '\'' +
                 ", gender='" + gender + '\'' +
                 ", position='" + position + '\'' +
+                
                 '}';
     }
+
+    public boolean isActive() {
+        return true;
+    };
+    
+   
 }

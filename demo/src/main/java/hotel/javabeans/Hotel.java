@@ -3,8 +3,8 @@ package hotel.javabeans;
 import java.util.ArrayList;
 import java.util.List;
 
-import Person.Guest;
-import Person.Staff;
+import hotel.javabeans.Person.Guest;
+import hotel.javabeans.Person.Staff;
 import hotel.javabeans.payment.Payment;
 
 public class Hotel {
