@@ -26,6 +26,22 @@ public abstract class Booking{
 
     public abstract double calculateTotalPrice();
 
+        // Confirm reservation → BookingConfirmed
+    public BookingConfirmed confirmBooking(double paymentAmount) {
+        if (confirmed) throw new IllegalStateException("Reservation already confirmed");
+        if (paymentAmount < estimatedPrice) throw new IllegalArgumentException("Insufficient payment");
+        confirmed = true;
+
+        return new BookingConfirmed(
+                guestName,
+                phone,
+                roomNumber,
+                checkInDate,
+                checkOutDate,
+                paymentAmount
+        );
+    }
+    
     //setters and getter
     public void setGuestName(String guestName){
         if(guestName != null && !guestName.trim().isEmpty()){
