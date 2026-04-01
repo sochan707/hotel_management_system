@@ -13,8 +13,7 @@ public abstract class Booking {
 
     public static final double TAX_RATE = 0.1;
 
-    public Booking(String guestName, String phone, int roomNumber,
-                   LocalDate checkInDate, LocalDate checkOutDate, double bookingPrice) {
+    public Booking(String guestName, String phone, int roomNumber, LocalDate checkInDate, LocalDate checkOutDate, double bookingPrice) {
         setGuestName(guestName);
         setPhone(phone);
         setRoomNumber(roomNumber);
