@@ -4,7 +4,7 @@ import hotel.javabeans.payment.Payment;
 
 public class Invoice {
     private final String invoiceId;
-    private String typeOfRoom;
+    private RoomType typeOfRoom;
     private double roomCharges;
     private int numberOfRooms;
     private int numberOfNights;
@@ -16,9 +16,9 @@ public class Invoice {
 
     private Payment payment;
 
-    public Invoice(String invoiceId, String typeOfRoom, double roomCharges, int numberOfRooms, int numberOfNights, int numberOfGuests, double totalAmount, boolean isPaid, Payment payment) {
+    public Invoice(String invoiceId, RoomType typeOfRoom, double roomCharges, int numberOfRooms, int numberOfNights, int numberOfGuests, double totalAmount, boolean isPaid, Payment payment) {
         this.invoiceId = validateInvoiceId(invoiceId);
-        this.typeOfRoom = validateTypeOfRoom(typeOfRoom);
+        this.typeOfRoom = typeOfRoom;
         this.roomCharges = validatePositive(roomCharges, "Room charge");
         this.numberOfRooms = validatePositive(numberOfRooms, "Number of room");
         this.numberOfNights = validatePositive(numberOfNights, "Number of night");
@@ -27,9 +27,11 @@ public class Invoice {
         setExtraPersonCharge(numberOfGuests, typeOfRoom);
         setDiscount(totalAmount);
         setTotalAmount(totalAmount);
-        setIsPaid(isPaid);
+        this.isPaid = isPaid;
         this.payment = payment;
     }
+
+    public enum RoomType { SINGLE, DOUBLE, TRIPLE }
 
     // ====================================== VALIDATION ==========================================
 
@@ -45,52 +47,26 @@ public class Invoice {
         return typeOfRoom;
     }
 
+    // =================================== OVERLOADING ==========================================
+
     private int validatePositive(int value, String fieldName) {
         if (value <= 0) throw new IllegalArgumentException(fieldName + " must be positive.");
         return value;
     }
 
-    // =================================== OVERLOADING ==========================================
     private double validatePositive(double value, String fieldName) {
         if (value <= 0) throw new IllegalArgumentException(fieldName + " must be positive.");
         return value;
     }
-
-    private double validateRoomCharges (double roomCharges){
-        if(roomCharges < 0.00)
-            throw new IllegalArgumentException("Room charges cannot be negative.");
-        return roomCharges;
-    }
     //=============================================================================================
-
-    // private double extraPersonCharge(int numberOfGuests, String typeOfRoom){
-    //     int includedGuests = 0;
-    //     switch(typeOfRoom) {
-    //         case "Single":
-    //             includedGuests = 1;
-    //             break;
-    //         case "Double":
-    //             includedGuests = 2;
-    //             break;
-    //         case "Triple":
-    //             includedGuests = 3;
-    //             break;
-    //     }
-    //     if(numberOfGuests > includedGuests) {
-    //         return (numberOfGuests - includedGuests) * 10.00; // $10 per extra person
-    //     } else {
-    //         return 0.00;
-    //     }
-    // }
 
     // ==================================== SETTER ========================================
 
-    public void setTypeOfRoom(String typeOfRoom) { // incase guest wanna change room
-        if("Single".equals(typeOfRoom) || "Double".equals(typeOfRoom) || "Triple".equals(typeOfRoom)) {
-            this.typeOfRoom = typeOfRoom;
-        } else {
-            throw new IllegalArgumentException("Invalid room type.");
+    public void setTypeOfRoom(RoomType typeOfRoom) { // incase guest wanna change room
+        if (typeOfRoom == null) {
+            throw new IllegalArgumentException("Room type cannot be null.");
         }
+        this.typeOfRoom = typeOfRoom;
     }
 
     public void setRoomCharges(double roomCharges) { // holiday ey lerng tlai room jg oy staff input tv 
@@ -125,48 +101,19 @@ public class Invoice {
         }
     }
 
-    public void setExtraPersonCharge(int numberOfGuests, String typeOfRoom) {
-        int includedGuests = 0;
-        switch(typeOfRoom) {
-            case "Single":
-                includedGuests = 1;
-                break;
-            case "Double":
-                includedGuests = 2;
-                break;
-            case "Triple":
-                includedGuests = 3;
-                break;
-        }
-        if(numberOfGuests > includedGuests) {
-            this.extraPersonCharge = (numberOfGuests - includedGuests) * 10.00; // $10 per extra person
-        } else {
-            this.extraPersonCharge = 0.00;
-        }
+    public void setExtraPersonCharge(int numberOfGuests, RoomType typeOfRoom) {
+        int includedGuests = typeOfRoom == RoomType.SINGLE ? 1 : typeOfRoom == RoomType.DOUBLE ? 2 : 3;
+        this.extraPersonCharge = numberOfGuests > includedGuests ? (numberOfGuests - includedGuests) * 10.00 : 0.00;
     }
 
     public void setDiscount(double totalAmount) {
-        if(discount >= 0.00 && discount <= 1.00) {
-            this.discount = discount;
-        } else {
-            throw new IllegalArgumentException("Discount cannot be negative.");
-        }
+        if (totalAmount < 0) 
+            throw new IllegalArgumentException("Invalid discount.");
+        this.discount = Math.min(1.00, totalAmount);  // Max discount of 100%
     }
 
     public void setTotalAmount(double totalAmount) {
-        if(totalAmount >= 0.00) {
-            this.totalAmount = (roomCharges * numberOfRooms * numberOfNights) + extraPersonCharge - discount;
-        } else {
-            throw new IllegalArgumentException("Total amount cannot be negative.");
-        }
-    }
-
-    public void setIsPaid(boolean isPaid) {
-        if(isPaid == true || isPaid == false) {
-            this.isPaid = isPaid;
-        } else {
-            throw new IllegalArgumentException("Invalid payment status.");
-        }
+        this.totalAmount = (roomCharges * numberOfRooms * numberOfNights) + extraPersonCharge - discount;
     }
 
     // ==================================== GETTER ========================================
@@ -175,7 +122,7 @@ public class Invoice {
         return invoiceId;
     }
 
-    public String getTypeOfRoom() {
+    public RoomType getTypeOfRoom() {
         return typeOfRoom;
     }
 
