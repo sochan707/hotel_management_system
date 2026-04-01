@@ -3,7 +3,7 @@ package hotel.javabeans;
 import hotel.javabeans.payment.Payment; 
 
 public class Invoice {
-    private String invoiceId;
+    private final String invoiceId;
     private String typeOfRoom;
     private double roomCharges;
     private int numberOfRooms;
@@ -17,12 +17,13 @@ public class Invoice {
     private Payment payment;
 
     public Invoice(String invoiceId, String typeOfRoom, double roomCharges, int numberOfRooms, int numberOfNights, int numberOfGuests, double totalAmount, boolean isPaid, Payment payment) {
-        setInvoiceId(invoiceId);
-        setTypeOfRoom(typeOfRoom);
-        setRoomCharges(roomCharges);
-        setNumberOfRooms(numberOfRooms);
-        setNumberOfNights(numberOfNights);
-        setNumberOfGuests(numberOfGuests);
+        this.invoiceId = validateInvoiceId(invoiceId);
+        this.typeOfRoom = validateTypeOfRoom(typeOfRoom);
+        this.roomCharges = validateRoomCharges(roomCharges);
+        this.numberOfRooms = validateNumberOfRooms(numberOfRooms);
+        this.numberOfNights = validateNumberOfNights(numberOfNights);
+        this.numberOfGuests = validateNumberOfGuests(numberOfGuests);
+
         setExtraPersonCharge(numberOfGuests, typeOfRoom);
         setDiscount(totalAmount);
         setTotalAmount(totalAmount);
@@ -30,15 +31,43 @@ public class Invoice {
         this.payment = payment;
     }
 
-    public void setInvoiceId(String invoiceId) {
-        if(invoiceId != null && !invoiceId.isEmpty()) {
-            this.invoiceId = invoiceId;
-        } else {
+    private String validateInvoiceId (String invoiceId){
+        if(invoiceId == null && invoiceId.isEmpty())
             throw new IllegalArgumentException("Invoice ID cannot be null or empty.");
-        }
+        return "IV" + invoiceId;
     }
 
-    public void setTypeOfRoom(String typeOfRoom) {
+    private String validateTypeOfRoom (String typeOfRoom){
+        if(!"Single".equals(typeOfRoom) || !"Double".equals(typeOfRoom) || !"Triple".equals(typeOfRoom))
+            throw new IllegalArgumentException("Invalid room type.");
+        return typeOfRoom;
+    }
+
+    private double validateRoomCharges (double roomCharges){
+        if(roomCharges < 0.00)
+            throw new IllegalArgumentException("Room charges cannot be negative.");
+        return roomCharges;
+    }
+
+    private int validateNumberOfNights (int numberOfNights){
+        if (numberOfNights <= 0)
+            throw new IllegalArgumentException("Number of nights cannot be negative or zero.");
+        return numberOfNights;
+    }
+
+    private int validateNumberOfGuests (int numberOfGuests){
+        if (numberOfGuests <= 0)
+            throw new IllegalArgumentException("Number of guest cannot be negative or zero.");
+        return numberOfGuests;
+    }
+
+    private int validateNumberOfRooms (int numberOfRooms){
+        if (numberOfRooms <= 0)
+            throw new IllegalArgumentException("Number of rooms cannot be negative or zero.");
+        return numberOfGuests;
+    }
+
+    public void setTypeOfRoom(String typeOfRoom) { // incase guest wanna change room
         if("Single".equals(typeOfRoom) || "Double".equals(typeOfRoom) || "Triple".equals(typeOfRoom)) {
             this.typeOfRoom = typeOfRoom;
         } else {
@@ -46,7 +75,7 @@ public class Invoice {
         }
     }
 
-    public void setRoomCharges(double roomCharges) { // holiday ey lerng tlai room jg oy staff input tv
+    public void setRoomCharges(double roomCharges) { // holiday ey lerng tlai room jg oy staff input tv 
         if(roomCharges >= 0.00) {
             this.roomCharges = roomCharges;
         } else {
@@ -54,7 +83,7 @@ public class Invoice {
         }
     }
 
-    public void setNumberOfRooms(int numberOfRooms) {
+    public void setNumberOfRooms(int numberOfRooms) { // handle when guess want to cancal or add rooms
         if(numberOfRooms > 0) {
             this.numberOfRooms = numberOfRooms;
         } else {
@@ -62,7 +91,7 @@ public class Invoice {
         }
     }
 
-    public void setNumberOfNights(int numberOfNights) {
+    public void setNumberOfNights(int numberOfNights) { // handle when guest want to extent the stay
         if(numberOfNights > 0) {
             this.numberOfNights = numberOfNights;
         } else {
@@ -70,7 +99,7 @@ public class Invoice {
         }
     }
 
-    public void setNumberOfGuests(int numberOfGuests) {
+    public void setNumberOfGuests(int numberOfGuests) { // unexpect guest come
         if(numberOfGuests > 0) {
             this.numberOfGuests = numberOfGuests;
         } else {
