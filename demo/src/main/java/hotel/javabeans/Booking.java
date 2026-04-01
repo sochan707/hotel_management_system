@@ -2,8 +2,7 @@ package hotel.javabeans;
 
 import java.time.LocalDate;
 
-public abstract class Booking {
-
+public abstract class Booking{
     protected String guestName;
     protected String phone;
     protected int roomNumber;
@@ -13,7 +12,10 @@ public abstract class Booking {
 
     public static final double TAX_RATE = 0.1;
 
+
     public Booking(String guestName, String phone, int roomNumber, LocalDate checkInDate, LocalDate checkOutDate, double bookingPrice) {
+
+    public Booking(String guestName, String phone, int roomNumber, LocalDate checkInDate, LocalDate checkOutDate, double bookingPrice){
         setGuestName(guestName);
         setPhone(phone);
         setRoomNumber(roomNumber);
@@ -22,29 +24,34 @@ public abstract class Booking {
         setBookingPrice(bookingPrice);
     }
 
-    // Abstract method for polymorphism
     public abstract double calculateTotalPrice();
 
-    // Validation setters
-    public void setGuestName(String guestName) {
-        if (guestName == null || guestName.trim().isEmpty())
-            throw new IllegalArgumentException("Guest name cannot be empty");
-        this.guestName = guestName;
+    //setters and getter
+    public void setGuestName(String guestName){
+        if(guestName != null && !guestName.trim().isEmpty()){
+            this.guestName = guestName;
+        }else{
+            throw new IllegalArgumentException("Guest name cannot be null or empty.");
+        }
     }
 
-    public void setPhone(String phone) {
-        if (phone == null || phone.trim().isEmpty())
-            throw new IllegalArgumentException("Phone cannot be empty");
-        this.phone = phone;
+    public void setPhone(String phone){
+        if(phone != null && !phone.trim().isEmpty()){
+            this.phone = phone;
+        }else{
+            throw new IllegalArgumentException("Phone cannot be null or empty.");
+        }
     }
 
-    public void setRoomNumber(int roomNumber) {
-        if (roomNumber <= 0)
-            throw new IllegalArgumentException("Room number must be positive");
-        this.roomNumber = roomNumber;
+    public void setRoomNumber(int roomNumber){
+        if(roomNumber>0){
+            this.roomNumber = roomNumber;
+        }else{
+            throw new IllegalArgumentException("Room Number must be positive.");
+        }
     }
 
-    public void setCheckInDate(LocalDate checkInDate) {
+    public void setCheckInDate(LocalDate checkInDate){
         if (checkInDate == null)
             throw new IllegalArgumentException("Check-in cannot be null");
         if (checkOutDate != null && checkInDate.isAfter(checkOutDate))
@@ -52,7 +59,7 @@ public abstract class Booking {
         this.checkInDate = checkInDate;
     }
 
-    public void setCheckOutDate(LocalDate checkOutDate) {
+    public void setCheckOutDate(LocalDate checkOutDate){
         if (checkOutDate == null)
             throw new IllegalArgumentException("Check-out cannot be null");
         if (checkInDate != null && checkOutDate.isBefore(checkInDate))
@@ -60,22 +67,37 @@ public abstract class Booking {
         this.checkOutDate = checkOutDate;
     }
 
-    public void setBookingPrice(double bookingPrice) {
-        if (bookingPrice <= 0)
-            throw new IllegalArgumentException("Booking price must be positive");
-        this.bookingPrice = bookingPrice;
+
+    public void setBookingPrice(double bookingPrice){
+        if(bookingPrice > 0){
+            this.bookingPrice = bookingPrice;
+        }else{
+            throw new IllegalArgumentException("Booking price must be positive.");
+        }
     }
 
     // Getters
-    public String getGuestName() { return guestName; }
-    public String getPhone() { return phone; }
-    public int getRoomNumber() { return roomNumber; }
-    public LocalDate getCheckInDate() { return checkInDate; }
-    public LocalDate getCheckOutDate() { return checkOutDate; }
-    public double getBookingPrice() { return bookingPrice; }
+    public String getGuestName(){ 
+        return guestName; 
+    }
+    public String getPhone(){ 
+        return phone; 
+    }
+    public int getRoomNumber(){ 
+        return roomNumber; 
+    }
+    public LocalDate getCheckInDate(){ 
+        return checkInDate; 
+    }
+    public LocalDate getCheckOutDate(){ 
+        return checkOutDate; 
+    }
+    public double getBookingPrice(){ 
+        return bookingPrice; 
+    }
 
-    @Override
-    public String toString() {
+        @Override
+    public String toString(){
         return "Booking{" +
                 "guestName='" + guestName + '\'' +
                 ", phone='" + phone + '\'' +
@@ -86,4 +108,6 @@ public abstract class Booking {
                 ", totalPrice=" + calculateTotalPrice() +
                 '}';
     }
+    
+
 }
