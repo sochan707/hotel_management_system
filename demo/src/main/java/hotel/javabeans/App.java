@@ -27,13 +27,27 @@ public class App
             "02/28"
         );
 
+        Invoice invoice = new Invoice(
+            "123",
+            Invoice.RoomType.SINGLE,
+            150.00,
+            2,
+            3,
+            4,
+            100.00,
+            true,
+            payment2
+        );
+
+        System.out.println(invoice);
+
         // Calculate the total payment
         // double total = payment.calculateTotal();
         // System.out.println("Total Amount: $" + total);
 
         // Display payment details
-        System.out.println(payment);
-        System.out.println(payment2);
+        // System.out.println(payment);
+        // System.out.println(payment2);
     }
 }
     
