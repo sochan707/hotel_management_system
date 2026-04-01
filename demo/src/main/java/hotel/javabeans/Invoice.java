@@ -19,10 +19,10 @@ public class Invoice {
     public Invoice(String invoiceId, String typeOfRoom, double roomCharges, int numberOfRooms, int numberOfNights, int numberOfGuests, double totalAmount, boolean isPaid, Payment payment) {
         this.invoiceId = validateInvoiceId(invoiceId);
         this.typeOfRoom = validateTypeOfRoom(typeOfRoom);
-        this.roomCharges = validateRoomCharges(roomCharges);
-        this.numberOfRooms = validateNumberOfRooms(numberOfRooms);
-        this.numberOfNights = validateNumberOfNights(numberOfNights);
-        this.numberOfGuests = validateNumberOfGuests(numberOfGuests);
+        this.roomCharges = validatePositive(roomCharges, "Room charge");
+        this.numberOfRooms = validatePositive(numberOfRooms, "Number of room");
+        this.numberOfNights = validatePositive(numberOfNights, "Number of night");
+        this.numberOfGuests = validatePositive(numberOfGuests, "Number of guest");
 
         setExtraPersonCharge(numberOfGuests, typeOfRoom);
         setDiscount(totalAmount);
@@ -30,6 +30,8 @@ public class Invoice {
         setIsPaid(isPaid);
         this.payment = payment;
     }
+
+    // ====================================== VALIDATION ==========================================
 
     private String validateInvoiceId (String invoiceId){
         if(invoiceId == null && invoiceId.isEmpty())
@@ -43,29 +45,45 @@ public class Invoice {
         return typeOfRoom;
     }
 
+    private int validatePositive(int value, String fieldName) {
+        if (value <= 0) throw new IllegalArgumentException(fieldName + " must be positive.");
+        return value;
+    }
+
+    // =================================== OVERLOADING ==========================================
+    private double validatePositive(double value, String fieldName) {
+        if (value <= 0) throw new IllegalArgumentException(fieldName + " must be positive.");
+        return value;
+    }
+
     private double validateRoomCharges (double roomCharges){
         if(roomCharges < 0.00)
             throw new IllegalArgumentException("Room charges cannot be negative.");
         return roomCharges;
     }
+    //=============================================================================================
 
-    private int validateNumberOfNights (int numberOfNights){
-        if (numberOfNights <= 0)
-            throw new IllegalArgumentException("Number of nights cannot be negative or zero.");
-        return numberOfNights;
-    }
+    // private double extraPersonCharge(int numberOfGuests, String typeOfRoom){
+    //     int includedGuests = 0;
+    //     switch(typeOfRoom) {
+    //         case "Single":
+    //             includedGuests = 1;
+    //             break;
+    //         case "Double":
+    //             includedGuests = 2;
+    //             break;
+    //         case "Triple":
+    //             includedGuests = 3;
+    //             break;
+    //     }
+    //     if(numberOfGuests > includedGuests) {
+    //         return (numberOfGuests - includedGuests) * 10.00; // $10 per extra person
+    //     } else {
+    //         return 0.00;
+    //     }
+    // }
 
-    private int validateNumberOfGuests (int numberOfGuests){
-        if (numberOfGuests <= 0)
-            throw new IllegalArgumentException("Number of guest cannot be negative or zero.");
-        return numberOfGuests;
-    }
-
-    private int validateNumberOfRooms (int numberOfRooms){
-        if (numberOfRooms <= 0)
-            throw new IllegalArgumentException("Number of rooms cannot be negative or zero.");
-        return numberOfGuests;
-    }
+    // ==================================== SETTER ========================================
 
     public void setTypeOfRoom(String typeOfRoom) { // incase guest wanna change room
         if("Single".equals(typeOfRoom) || "Double".equals(typeOfRoom) || "Triple".equals(typeOfRoom)) {
@@ -151,6 +169,8 @@ public class Invoice {
         }
     }
 
+    // ==================================== GETTER ========================================
+
     public String getInvoiceId() {
         return invoiceId;
     }
@@ -197,19 +217,8 @@ public class Invoice {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder(); //used to create multi-line string
-        sb.append("Invoice ID: ").append(invoiceId).append("\n");
-        sb.append("Room Type: ").append(typeOfRoom).append("\n");
-        sb.append("Total Amount: $").append(totalAmount).append("\n");
-        sb.append("Is Paid: ").append(isPaid ? "Yes" : "No").append("\n");
-
-        if (payment != null) {
-            sb.append(payment.toString()).append("\n");
-        } else {
-            sb.append("No payment information available.\n");
-        }
-
-        return sb.toString();
+        return String.format("Invoice ID: %s\nRoom Type: %s\nTotal Amount: $%.2f\nIs Paid: %s\n%s",
+                invoiceId, typeOfRoom, totalAmount, isPaid ? "Yes" : "No", payment != null ? payment : "No payment info.");
     }
     
 }
