@@ -36,7 +36,7 @@ public class Reservation {
     // -------------------------------------------------------------------------
 
     private final String reservationId;
-    private String guestName;
+    private final String guestName;
     private String phone;
     private Map<RoomType, Integer> roomTypes = new EnumMap<>(RoomType.class);
     private LocalDate checkInDate;
@@ -56,7 +56,7 @@ public class Reservation {
                        LocalDate checkInDate, LocalDate checkOutDate,
                        double estimatedPrice) {
         this.reservationId = UUID.randomUUID().toString();
-        setGuestName(guestName);
+        this.guestName = validateGuestName(guestName);
         setPhone(phone);
         setRoomTypes(roomTypes);
         setCheckInDate(checkInDate);
@@ -77,14 +77,13 @@ public class Reservation {
     }
 
     // -------------------------------------------------------------------------
-    // Setters
+    // Setters + Validation
     // -------------------------------------------------------------------------
 
-    public void setGuestName(String guestName) {
-        if (guestName == null || guestName.trim().isEmpty()) {
+    private String validateGuestName(String guestName){
+        if (guestName == null || guestName.trim().isEmpty())
             throw new IllegalArgumentException("Guest name cannot be null or empty.");
-        }
-        this.guestName = guestName.trim();
+        return guestName.trim();
     }
 
     public void setPhone(String phone) {
