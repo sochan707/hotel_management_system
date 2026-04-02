@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
-public abstract class Booking {
+public class Booking {
     public enum RoomType {
         SINGLE,
         DOUBLE,
@@ -92,12 +92,6 @@ public abstract class Booking {
         }
         setRoomTypes(converted);
     }
-
-    // -------------------------------------------------------------------------
-    // Abstract method
-    // -------------------------------------------------------------------------
-
-    public abstract double calculateTotalPrice();
 
     // -------------------------------------------------------------------------
     // Private helpers
@@ -244,7 +238,6 @@ public abstract class Booking {
                ", bookingPrice="   + bookingPrice          +
                ", tax="            + calculateTax()        +
                ", totalWithTax="   + totalWithTax()        +
-               ", totalPrice="     + calculateTotalPrice() +
-               '}';
+                + '}';
     }
 }
