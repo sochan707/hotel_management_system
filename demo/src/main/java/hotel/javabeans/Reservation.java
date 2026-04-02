@@ -6,14 +6,12 @@ import java.util.Map;
 import java.util.UUID;
 
 public class Reservation {
- 
-
     public enum RoomType {
         SINGLE,
         DOUBLE,
         TRIPLE;
 
-        public static RoomType from(String value) {
+        public static RoomType from(String value) { // from() method converts a String input into a valid RoomType enum constant.
             if (value == null || value.trim().isEmpty()) {
                 throw new IllegalArgumentException("Room type cannot be null or empty.");
             }
@@ -31,7 +29,7 @@ public class Reservation {
     // Constants
     // -------------------------------------------------------------------------
 
-    public static final double DEPOSIT_RATE = 0.4;
+    public static final double DEPOSIT_RATE = 0.4; // luy kok 40%
 
     // -------------------------------------------------------------------------
     // Fields
@@ -96,6 +94,7 @@ public class Reservation {
         this.phone = phone.trim();
     }
 
+    // set 1 roomType or more yor marn room
     public void setRoomTypes(Map<RoomType, Integer> roomTypes) {
         if (roomTypes == null || roomTypes.isEmpty()) {
             throw new IllegalArgumentException("Room types cannot be null or empty.");
@@ -187,7 +186,10 @@ public class Reservation {
     }
 
     public int getTotalRooms() {
-        return roomTypes.values().stream().mapToInt(Integer::intValue).sum();
+        return roomTypes.values() //representing the quantity of rooms for each type
+                        .stream()
+                        .mapToInt(Integer::intValue) // ex: {1,2,3} => 1 , 2 , and 3
+                        .sum(); // 1+2+3 = 6
     }
 
     // -------------------------------------------------------------------------

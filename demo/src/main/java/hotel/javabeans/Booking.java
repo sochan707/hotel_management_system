@@ -8,8 +8,6 @@ import java.util.Objects;
 import java.util.UUID;
 
 public abstract class Booking {
-
-
     public enum RoomType {
         SINGLE,
         DOUBLE,
