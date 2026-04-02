@@ -40,13 +40,21 @@ public boolean can(String action) {
     }
 
     // If it's a Receptionist
-    if (position.equals("Receptionist")) {
-        return switch (act) {
-            case "checkin", "checkout", "bookroom", 
-                 "cancelbooking", "viewbooking", "viewguest", "viewroom" -> true;
-            default -> false;
-        };
+   if (position.equals("Receptionist")) {
+    
+    if (act.equals("checkin") || 
+        act.equals("checkout") || 
+        act.equals("bookroom") || 
+        act.equals("cancelbooking") || 
+        act.equals("viewbooking") || 
+        act.equals("viewguest") || 
+        act.equals("viewroom")) {
+        
+        return true;
+    } else {
+        return false;
     }
+}
 
     return false;   // Default: no permission
 }
@@ -59,12 +67,11 @@ public boolean can(String action) {
     public String toString() {
         return "Staff{" +
                 "staffId='" + getId() + '\'' +
-                ", firstName='" + getFirstName() + '\'' +
-                ", lastName='" + getLastName()+ '\'' +
+                ", name='" + getFirstName() + " " + getLastName() + '\'' +
                 ", phone='" + getPhone() + '\'' +
                 ", gender='" + getGender() + '\'' +
                 ", position='" + position + '\'' +
-                ", active=" + active +
+                ", active=" + isActive() +
                 '}';
     }
 }
