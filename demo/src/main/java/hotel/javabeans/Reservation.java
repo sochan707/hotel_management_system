@@ -168,7 +168,7 @@ public class Reservation {
     // -------------------------------------------------------------------------
 
     public void markDepositPaid(String paymentId) {
-        if (paymentId == null || paymentId.isBlank()) {
+        if (paymentId == null || paymentId.isEmpty()) {
             throw new IllegalArgumentException("Payment ID is required to mark deposit as paid.");
         }
         this.depositPaid = true;
