@@ -1,22 +1,46 @@
 package hotel.javabeans;
 
 import java.time.LocalDate;
+import java.util.EnumMap;
+import java.util.Map;
 import java.util.UUID;
 
 public class Reservation {
+ 
 
     public enum RoomType {
         SINGLE,
         DOUBLE,
-        TRIPLE
+        TRIPLE;
+
+        public static RoomType from(String value) {
+            if (value == null || value.trim().isEmpty()) {
+                throw new IllegalArgumentException("Room type cannot be null or empty.");
+            }
+            switch (value.trim().toUpperCase()) {
+                case "SINGLE": return SINGLE;
+                case "DOUBLE": return DOUBLE;
+                case "TRIPLE": return TRIPLE;
+                default:
+                    throw new IllegalArgumentException("Invalid room type: " + value);
+            }
+        }
     }
 
+    // -------------------------------------------------------------------------
+    // Constants
+    // -------------------------------------------------------------------------
+
     public static final double DEPOSIT_RATE = 0.4;
+
+    // -------------------------------------------------------------------------
+    // Fields
+    // -------------------------------------------------------------------------
 
     private final String reservationId;
     private String guestName;
     private String phone;
-    private RoomType roomType;
+    private Map<RoomType, Integer> roomTypes = new EnumMap<>(RoomType.class);
     private LocalDate checkInDate;
     private LocalDate checkOutDate;
     private double estimatedPrice;
@@ -25,45 +49,38 @@ public class Reservation {
     private String depositPaymentId;
     private boolean confirmed = false;
 
+    // -------------------------------------------------------------------------
+    // Constructor
+    // -------------------------------------------------------------------------
 
-
-    public Reservation(String guestName, String phone, RoomType roomType,
+    public Reservation(String guestName, String phone,
+                       Map<RoomType, Integer> roomTypes,
                        LocalDate checkInDate, LocalDate checkOutDate,
                        double estimatedPrice) {
         this.reservationId = UUID.randomUUID().toString();
         setGuestName(guestName);
         setPhone(phone);
-        setRoomType(roomType);
+        setRoomTypes(roomTypes);
         setCheckInDate(checkInDate);
         setCheckOutDate(checkOutDate);
-        setEstimatedPrice(estimatedPrice); // also calls computeDeposit()
+        setEstimatedPrice(estimatedPrice);
     }
 
+    // -------------------------------------------------------------------------
     // Private helpers
+    // -------------------------------------------------------------------------
 
     private void computeDeposit() {
-        this.depositAmount = roundTwoDecimals(this.estimatedPrice * DEPOSIT_RATE);
+        this.depositAmount = round2(this.estimatedPrice * DEPOSIT_RATE);
     }
 
-    private static double roundTwoDecimals(double v) {
+    private static double round2(double v) {
         return Math.round(v * 100.0) / 100.0;
     }
 
-    private RoomType validateRoomType(String roomType) {
-        if (roomType == null) {
-            throw new IllegalArgumentException("Room type cannot be null.");
-        }
-        switch (roomType.trim().toUpperCase()) {
-            case "SINGLE": return RoomType.SINGLE;
-            case "DOUBLE": return RoomType.DOUBLE;
-            case "TRIPLE": return RoomType.TRIPLE;
-            default:
-                throw new IllegalArgumentException("Invalid room type: " + roomType);
-        }
-    }
-
-    
-    // Setters with validation
+    // -------------------------------------------------------------------------
+    // Setters
+    // -------------------------------------------------------------------------
 
     public void setGuestName(String guestName) {
         if (guestName == null || guestName.trim().isEmpty()) {
@@ -79,17 +96,43 @@ public class Reservation {
         this.phone = phone.trim();
     }
 
-    // Accepts an enum value directly.
-    public void setRoomType(RoomType roomType) {
+    public void setRoomTypes(Map<RoomType, Integer> roomTypes) {
+        if (roomTypes == null || roomTypes.isEmpty()) {
+            throw new IllegalArgumentException("Room types cannot be null or empty.");
+        }
+        for (Map.Entry<RoomType, Integer> entry : roomTypes.entrySet()) {
+            if (entry.getKey() == null) {
+                throw new IllegalArgumentException("Room type key cannot be null.");
+            }
+            if (entry.getValue() == null || entry.getValue() <= 0) {
+                throw new IllegalArgumentException(
+                    "Quantity for room type " + entry.getKey() + " must be positive.");
+            }
+        }
+        this.roomTypes = new EnumMap<>(roomTypes);
+    }
+
+    public void addRoomType(RoomType roomType, int quantity) {
         if (roomType == null) {
             throw new IllegalArgumentException("Room type cannot be null.");
         }
-        this.roomType = roomType;
+        if (quantity <= 0) {
+            throw new IllegalArgumentException("Quantity must be positive.");
+        }
+        this.roomTypes.put(roomType, this.roomTypes.getOrDefault(roomType, 0) + quantity);
     }
 
-    //Accepts a raw string from user input and converts it to the enum. 
-    public void setRoomType(String roomTypeStr) {
-        this.roomType = validateRoomType(roomTypeStr);
+    public void removeRoomType(RoomType roomType) {
+        if (roomType == null) {
+            throw new IllegalArgumentException("Room type cannot be null.");
+        }
+        if (!this.roomTypes.containsKey(roomType)) {
+            throw new IllegalArgumentException("Room type " + roomType + " is not in this reservation.");
+        }
+        this.roomTypes.remove(roomType);
+        if (this.roomTypes.isEmpty()) {
+            throw new IllegalStateException("Reservation must have at least one room type.");
+        }
     }
 
     public void setCheckInDate(LocalDate checkInDate) {
@@ -117,10 +160,13 @@ public class Reservation {
             throw new IllegalArgumentException("Estimated price must be positive.");
         }
         this.estimatedPrice = estimatedPrice;
-        computeDeposit(); // keep depositAmount in sync
+        computeDeposit();
     }
 
-    //
+    // -------------------------------------------------------------------------
+    // Business methods
+    // -------------------------------------------------------------------------
+
     public void markDepositPaid(String paymentId) {
         if (paymentId == null || paymentId.isBlank()) {
             throw new IllegalArgumentException("Payment ID is required to mark deposit as paid.");
@@ -137,39 +183,47 @@ public class Reservation {
     }
 
     public double getRemainingBalance() {
-        return roundTwoDecimals(estimatedPrice - depositAmount);
+        return round2(estimatedPrice - depositAmount);
     }
 
+    public int getTotalRooms() {
+        return roomTypes.values().stream().mapToInt(Integer::intValue).sum();
+    }
 
+    // -------------------------------------------------------------------------
     // Getters
+    // -------------------------------------------------------------------------
 
-    public String getReservationId()    { return reservationId; }
-    public String getGuestName()        { return guestName; }
-    public String getPhone()            { return phone; }
-    public RoomType getRoomType()       { return roomType; }
-    public LocalDate getCheckInDate()   { return checkInDate; }
-    public LocalDate getCheckOutDate()  { return checkOutDate; }
-    public double getEstimatedPrice()   { return estimatedPrice; }
-    public double getDepositAmount()    { return depositAmount; }
-    public boolean isDepositPaid()      { return depositPaid; }
-    public String getDepositPaymentId() { return depositPaymentId; }
-    public boolean isConfirmed()        { return confirmed; }
+    public String getReservationId()             { return reservationId; }
+    public String getGuestName()                 { return guestName; }
+    public String getPhone()                     { return phone; }
+    public Map<RoomType, Integer> getRoomTypes() { return new EnumMap<>(roomTypes); }
+    public LocalDate getCheckInDate()            { return checkInDate; }
+    public LocalDate getCheckOutDate()           { return checkOutDate; }
+    public double getEstimatedPrice()            { return estimatedPrice; }
+    public double getDepositAmount()             { return depositAmount; }
+    public boolean isDepositPaid()               { return depositPaid; }
+    public String getDepositPaymentId()          { return depositPaymentId; }
+    public boolean isConfirmed()                 { return confirmed; }
 
-    
-    // toString 
+    // -------------------------------------------------------------------------
+    // toString
+    // -------------------------------------------------------------------------
 
     @Override
     public String toString() {
         return "Reservation{" +
-               "id='" + reservationId + '\'' +
-               ", guest='" + guestName + '\'' +
-               ", room=" + roomType +
-               ", checkIn=" + checkInDate +
-               ", checkOut=" + checkOutDate +
-               ", estimatedPrice=" + estimatedPrice +
-               ", depositAmount=" + depositAmount +
-               ", depositPaid=" + depositPaid +
-               ", confirmed=" + confirmed +
+               "reservationId='"   + reservationId  + '\'' +
+               ", guestName='"     + guestName       + '\'' +
+               ", phone='"         + phone           + '\'' +
+               ", roomTypes="      + roomTypes       +
+               ", totalRooms="     + getTotalRooms() +
+               ", checkInDate="    + checkInDate     +
+               ", checkOutDate="   + checkOutDate    +
+               ", estimatedPrice=" + estimatedPrice  +
+               ", depositAmount="  + depositAmount   +
+               ", depositPaid="    + depositPaid     +
+               ", confirmed="      + confirmed       +
                '}';
     }
 }
