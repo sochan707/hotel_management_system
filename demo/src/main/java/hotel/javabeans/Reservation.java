@@ -80,7 +80,7 @@ public class Reservation {
     // Setters + Validation
     // -------------------------------------------------------------------------
 
-    private String validateGuestName(String guestName){
+    private String validateGuestName(String guestName){ // use private kom oy ke change name nhe nhai
         if (guestName == null || guestName.trim().isEmpty())
             throw new IllegalArgumentException("Guest name cannot be null or empty.");
         return guestName.trim();
