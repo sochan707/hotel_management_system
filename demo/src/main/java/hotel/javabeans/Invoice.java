@@ -41,12 +41,6 @@ public class Invoice {
         return "IV" + invoiceId;
     }
 
-    private String validateTypeOfRoom (String typeOfRoom){
-        if(!"Single".equals(typeOfRoom) || !"Double".equals(typeOfRoom) || !"Triple".equals(typeOfRoom))
-            throw new IllegalArgumentException("Invalid room type.");
-        return typeOfRoom;
-    }
-
     // =================================== OVERLOADING ==========================================
 
     private int validatePositive(int value, String fieldName) {
