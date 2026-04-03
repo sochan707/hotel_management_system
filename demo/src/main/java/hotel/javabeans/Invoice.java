@@ -1,9 +1,12 @@
 package hotel.javabeans;
 
+import java.time.LocalDate;
+
 import hotel.javabeans.payment.Payment; 
 
 public class Invoice {
     private final String invoiceId;
+    private final String bookingId;
     private RoomType typeOfRoom;
     private double roomCharges;
     private int numberOfRooms;
@@ -11,12 +14,17 @@ public class Invoice {
     private int numberOfGuests;
     private double extraPersonCharge;
     private double discount;
+    private double taxAmount;
+    private double depositApplied;
     private double totalAmount;
     private boolean isPaid;
+    private LocalDate issueDate;
 
     private Payment payment;
 
-    public Invoice(String invoiceId, RoomType typeOfRoom, double roomCharges, int numberOfRooms, int numberOfNights, int numberOfGuests, double totalAmount, boolean isPaid, Payment payment) {
+    public static final double TAX_RATE = 0.1;
+
+    public Invoice(String invoiceId, RoomType typeOfRoom, double roomCharges, int numberOfRooms, int numberOfNights, int numberOfGuests, double totalAmount, boolean isPaid, LocalDate issueDate, Payment payment) {
         this.invoiceId = validateInvoiceId(invoiceId);
         this.typeOfRoom = typeOfRoom;
         this.roomCharges = validatePositive(roomCharges, "Room charge");
@@ -28,6 +36,7 @@ public class Invoice {
         setDiscount(totalAmount);
         setTotalAmount(totalAmount);
         this.isPaid = isPaid;
+        this.issueDate = LocalDate.now();
         this.payment = payment;
     }
 
