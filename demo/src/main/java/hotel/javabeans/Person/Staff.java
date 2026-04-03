@@ -1,7 +1,7 @@
 package hotel.javabeans.Person;
 public abstract class Staff extends Person implements IStaff{
-    protected String position;
-    protected boolean active = true;
+   private String position;
+   private boolean active = true;
     
     
     public Staff (String id, String firstName, String lastName, String gender, String phone , String position) {
@@ -10,7 +10,7 @@ public abstract class Staff extends Person implements IStaff{
     }
 
     protected void setPosition (String position) {
-        if (position == null || position.isEmpty()) {
+        if (position == null || position.trim().isEmpty()) {
             throw new IllegalArgumentException ("Position cannot be null or blank");
         }
         if (!position.trim().equalsIgnoreCase("Manager") && !position.trim().equalsIgnoreCase("Receptionist")) {

@@ -1,11 +1,11 @@
 package hotel.javabeans.Person;
 
 public abstract class Person {
-    protected String id;
-    protected String firstName;
-    protected String lastName;
-    protected String gender;
-    protected String phone;
+   private String id;
+   private String firstName;
+   private String lastName;
+   private String gender;
+   private String phone;
   
     
     public static final String MALE = "Male";
@@ -14,8 +14,8 @@ public abstract class Person {
     
     public Person(String id, String firstName, String lastName,String gender, String phone) {
         setId(id);
-        setName(name);
-        setName(name);
+        setFirstName(firstName);
+        setLastName(lastName);
         setGender(gender);
         setPhone(phone);
     
@@ -42,49 +42,45 @@ public abstract class Person {
     public String getPhone() {
         return phone;
     }
-        
-    public String getPosition() {
-        return position;
-    }
     
      protected void setId(String id) {
-        if(id != null && !id.isEmpty()) {
-            this.id = id;
+        if(id != null && !id.trim().isEmpty()) {
+            this.id = id.trim();
         } else {
-            throw new IllegalArgumentException("Staff ID cannot be null or  empty.");
+            throw new IllegalArgumentException("ID cannot be null or empty.");
         }
     }
     
-    protected void setFirstName(String name) {
-        if(name != null && !name.isEmpty()) {
-            this.name = name;
+    protected void setFirstName(String firstName) {
+        if(firstName != null && !firstName.trim().isEmpty()) {
+            this.firstName = firstName.trim();
         } else {
             throw new IllegalArgumentException("Firstname cannot be null or empty.");
         }
     }
-    protected void setLastame(String name) {
-        if(name != null && !name.isEmpty()) {
-            this.name = name;
+    protected void setLastName(String lastName) {
+        if(lastName != null && !lastName.trim().isEmpty()) {
+            this.lastName = lastName.trim();
         } else {
             throw new IllegalArgumentException("Lastname cannot be null or empty.");
         }
     }
     protected void setGender(String gender) {
-         if(gender != null && !gender.isEmpty()) {
-            if(gender.equalsIgnoreCase(MALE) || gender.equalsIgnoreCase(FEMALE)) {
-                this.gender = gender;
-            } else {
-                throw new IllegalArgumentException("Gender must be 'Male' or 'Female'.");
-            }
-        } else {
+        if (gender == null || gender.trim().isEmpty()) {
             throw new IllegalArgumentException("Gender cannot be null or empty.");
+        }
+        String g = gender.trim();
+        if (g.equalsIgnoreCase(MALE) || g.equalsIgnoreCase(FEMALE)) {
+            this.gender = g;
+        } else {
+            throw new IllegalArgumentException("Gender must be 'Male' or 'Female'.");
         }
     }
     
     protected void setPhone(String phone) {
-         if(phone != null && !phone.isEmpty()) {
+         if(phone != null && !phone.trim().isEmpty()) {
             if(phone.length() >= 9 && phone.length() <= 15) {
-                this.phone = phone;
+                this.phone = phone.trim();
             } else {
                 throw new IllegalArgumentException("Phone number must be between 9 and 15 characters.");
             }
