@@ -46,6 +46,7 @@ public class Reservation {
     private boolean depositPaid = false;
     private String depositPaymentId;
     private boolean confirmed = false;
+    private LocalDate reservationDate;
 
     // -------------------------------------------------------------------------
     // Constructor
@@ -62,6 +63,7 @@ public class Reservation {
         setCheckInDate(checkInDate);
         setCheckOutDate(checkOutDate);
         setEstimatedPrice(estimatedPrice);
+        this.reservationDate = LocalDate.now();
     }
 
     // -------------------------------------------------------------------------
