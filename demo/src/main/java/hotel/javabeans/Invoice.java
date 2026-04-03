@@ -336,10 +336,6 @@ public class Invoice {
         return paid;
     }
 
-    public boolean getIsPaid() {
-        return isPaid();
-    }
-
     public LocalDate getIssueDate() {
         return issueDate;
     }
@@ -351,23 +347,49 @@ public class Invoice {
     // ========================================================== TOSTRING ======================================================
     @Override
     public String toString() {
-        return "Invoice{" +
-                "invoiceId='" + invoiceId + '\'' +
-                ", bookingId='" + bookingId + '\'' +
-                ", roomTypes=" + roomTypes +
-                ", roomRatePerNight=" + roomRatePerNight +
-                ", totalRooms=" + getTotalRooms() +
-                ", numberOfNights=" + numberOfNights +
-                ", numberOfGuests=" + numberOfGuests +
-                ", roomCharges=" + roomCharges +
-                ", extraPersonCharge=" + extraPersonCharge +
-                ", discount=" + discount +
-                ", taxAmount=" + taxAmount +
-                ", depositApplied=" + depositApplied +
-                ", totalAmount=" + totalAmount +
-                ", paid=" + paid +
-                ", issueDate=" + issueDate +
-                ", payment=" + (payment != null ? payment : "No payment info") +
-                '}';
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("\n================= HOTEL INVOICE =================\n");
+        sb.append("Invoice ID   : ").append(invoiceId).append("\n");
+        sb.append("Booking ID   : ").append(bookingId).append("\n");
+        sb.append("Issue Date   : ").append(issueDate).append("\n");
+        sb.append("--------------------------------------------------\n");
+
+        sb.append("ROOM DETAILS:\n");
+        for (Map.Entry<RoomType, Integer> entry : roomTypes.entrySet()) {
+            RoomType type = entry.getKey();
+            int qty = entry.getValue();
+            double rate = roomRatePerNight.get(type);
+
+            sb.append(String.format("  %-7s x %d room(s) @ $%.2f/night\n", type, qty, rate));
+        }
+
+        sb.append("Nights       : ").append(numberOfNights).append("\n");
+        sb.append("Guests       : ").append(numberOfGuests).append("\n");
+
+        sb.append("--------------------------------------------------\n");
+
+        sb.append(String.format("Room Charges : $%.2f\n", roomCharges));
+        sb.append(String.format("Extra Charge : $%.2f\n", extraPersonCharge));
+        sb.append(String.format("Discount     : -$%.2f\n", discount));
+        sb.append(String.format("Tax (10%%)    : $%.2f\n", taxAmount));
+        sb.append(String.format("Deposit Used : -$%.2f\n", depositApplied));
+
+        sb.append("--------------------------------------------------\n");
+        sb.append(String.format("TOTAL AMOUNT : $%.2f\n", totalAmount));
+
+        sb.append("--------------------------------------------------\n");
+        sb.append("STATUS       : ").append(paid ? "PAID" : "UNPAID").append("\n");
+
+        if (payment != null) {
+            sb.append("Payment Info : ").append(payment.getPaymentId())
+            .append(" (").append(payment.getPaymentStatus()).append(")\n");
+        } else {
+            sb.append("Payment Info : NONE\n");
+        }
+
+        sb.append("==================================================\n");
+
+        return sb.toString();
     }
 }

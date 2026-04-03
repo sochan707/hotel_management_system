@@ -1,7 +1,11 @@
 package hotel.javabeans;
 
+import java.time.LocalDate;
 import java.util.EnumMap;
 import java.util.Map;
+
+import hotel.javabeans.payment.CreditCardPayment;
+import hotel.javabeans.payment.Payment;
 
 public class App 
 {
@@ -25,9 +29,24 @@ public class App
             40.0,           // deposit already paid
             null            // payment (not paid yet)
         );
+
+        Payment payment = new CreditCardPayment(
+            "P001",
+            invoice.getTotalAmount(),
+            LocalDate.now(),
+            Payment.PaymentStatus.COMPLETED,
+            "1234567890",
+            "John Doe",
+            "12/30"
+        );
+
+        invoice.payInvoice(payment);
         System.out.println(invoice);
         System.out.println("Total: $" + invoice.getTotalAmount());
+        System.out.println("Paid? " + invoice.isPaid());
     }
+
+    
 }
     
 
