@@ -14,14 +14,10 @@ public abstract class Person {
     
     public Person(String id, String firstName, String lastName,String gender, String phone) {
         setId(id);
-        setName(name);
-        setName(name);
+        setFirstName(firstName);
+        setLastName(lastName);
         setGender(gender);
         setPhone(phone);
-    
-        
-        
-        
     }
     
     public String getId() {
@@ -43,9 +39,7 @@ public abstract class Person {
         return phone;
     }
         
-    public String getPosition() {
-        return position;
-    }
+    // `position` belongs to Staff subclasses, not base Person via this class.
     
      protected void setId(String id) {
         if(id != null && !id.isEmpty()) {
@@ -55,16 +49,16 @@ public abstract class Person {
         }
     }
     
-    protected void setFirstName(String name) {
-        if(name != null && !name.isEmpty()) {
-            this.name = name;
+    protected void setFirstName(String firstName) {
+        if(firstName != null && !firstName.isEmpty()) {
+            this.firstName = firstName;
         } else {
             throw new IllegalArgumentException("Firstname cannot be null or empty.");
         }
     }
-    protected void setLastame(String name) {
-        if(name != null && !name.isEmpty()) {
-            this.name = name;
+    protected void setLastName(String lastName) {
+        if(lastName != null && !lastName.isEmpty()) {
+            this.lastName = lastName;
         } else {
             throw new IllegalArgumentException("Lastname cannot be null or empty.");
         }

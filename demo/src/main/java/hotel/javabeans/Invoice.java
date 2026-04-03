@@ -336,6 +336,10 @@ public class Invoice {
         return paid;
     }
 
+    public boolean getIsPaid() {
+        return isPaid();
+    }
+
     public LocalDate getIssueDate() {
         return issueDate;
     }
