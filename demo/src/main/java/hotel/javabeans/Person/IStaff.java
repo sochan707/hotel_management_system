@@ -8,6 +8,5 @@ public interface IStaff {
     String getPhone();
     String getPosition();
     boolean isActive();
-    
     boolean can(String action);
 }

@@ -7,11 +7,11 @@ public class Room {
     public static final String OCCUPIED = "Occupied";
     
     private String roomNumber;
-    private RoomType roomType;
+    private TypeOfRoom roomType;
     private double price;
     private String status;
     
-    public Room(String roomNumber, RoomType roomType, double price) {
+    public Room(String roomNumber, TypeOfRoom roomType, double price) {
         setRoomNumber(roomNumber);
         setRoomType(roomType);
         setPrice(price);
@@ -22,7 +22,7 @@ public String getRoomNumber() {
         return roomNumber;
     }
     
-    public RoomType getRoomType() {
+    public TypeOfRoom getRoomType() {
         return roomType;
     }
     
@@ -41,7 +41,7 @@ public String getRoomNumber() {
     
     this.roomNumber = roomNumber.trim();
 }
- public void setRoomType(RoomType roomType) {
+ public void setRoomType(TypeOfRoom roomType) {
         if (roomType == null) {
             throw new IllegalArgumentException("Room type cannot be null.");
         }

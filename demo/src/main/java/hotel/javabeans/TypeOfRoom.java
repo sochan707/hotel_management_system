@@ -1,6 +1,6 @@
 package hotel.javabeans;
 
-public enum RoomType {
+public enum TypeOfRoom {
     SINGLE("Single", 1),
     DOUBLE("Double", 2),
     TRIPLE("Triple", 3);
@@ -9,7 +9,7 @@ public enum RoomType {
     private final int capacity;   // number of people the room taht can stay
 
   
-    RoomType(String displayName, int capacity) {
+    TypeOfRoom(String displayName, int capacity) {
         this.displayName = displayName;
         this.capacity = capacity;
     }
