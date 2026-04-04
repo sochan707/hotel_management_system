@@ -5,50 +5,33 @@ public abstract class Staff extends Person implements IStaff {
     private String position;
     private boolean active = true;
 
-    public Staff(String id, String firstName, String lastName, String gender,
-                 String phone, String position) {
-        
+    public Staff(String id, String firstName, String lastName,
+                 String gender, String phone, String position) {
         super(id, firstName, lastName, gender, phone);
         setPosition(position);
     }
 
     protected void setPosition(String position) {
-        if (position == null || position.trim().isEmpty()) {
+        if (position == null || position.trim().isEmpty())
             throw new IllegalArgumentException("Position cannot be null or blank.");
-        }
 
         String pos = position.trim();
-
-        if (!pos.equalsIgnoreCase("Manager") && !pos.equalsIgnoreCase("Receptionist")) {
-            throw new IllegalArgumentException("Position must be either 'Manager' or 'Receptionist'.");
-        }
+        if (!pos.equalsIgnoreCase("Manager") && !pos.equalsIgnoreCase("Receptionist"))
+            throw new IllegalArgumentException("Position must be 'Manager' or 'Receptionist'.");
 
         this.position = pos.equalsIgnoreCase("Manager") ? "Manager" : "Receptionist";
     }
 
-    public String getPosition() {
-        return position;
-    }
+    public void setActive(boolean active) { this.active = active; }
 
-    @Override
-    public boolean isActive() {
-        return active;
-    }
+    @Override public String  getPosition() { return position; }
+    @Override public boolean isActive()    { return active; }
 
     @Override
     public boolean can(String action) {
-        if (position == null || action == null) {
-            return false;
-        }
-
+        if (position == null || action == null) return false;
         String act = action.toLowerCase().trim();
-
-        // Manager can do everything
-        if (position.equals("Manager")) {
-            return true;
-        }
-
-        // Receptionist has limited permissions
+        if (position.equals("Manager")) return true;
         if (position.equals("Receptionist")) {
             return switch (act) {
                 case "checkin", "checkout", "bookroom", "cancelbooking",
@@ -56,19 +39,13 @@ public abstract class Staff extends Person implements IStaff {
                 default -> false;
             };
         }
-
         return false;
     }
 
     @Override
     public String toString() {
-        return "Staff{" +
-                "id='" + getId() + '\'' +
-                ", name='" + getFirstName() + " " + getLastName() + '\'' +
-                ", phone='" + getPhone() + '\'' +
-                ", gender='" + getGender() + '\'' +
-                ", position='" + position + '\'' +
-                ", active=" + active +
-                '}';
+        return "Staff{id='" + getId() + "', name='" + getFirstName() + " " + getLastName() +
+               "', phone='" + getPhone() + "', gender='" + getGender() +
+               "', position='" + position + "', active=" + active + '}';
     }
 }
