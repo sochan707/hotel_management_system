@@ -1,9 +1,28 @@
 package hotel.javabeans.ui;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.border.*;
+import java.awt.BasicStroke;
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GradientPaint;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.GridLayout;
+import java.awt.RenderingHints;
+
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
 
 import hotel.javabeans.Hotel;
 import hotel.javabeans.Login;
@@ -26,14 +45,12 @@ public class DashboardFrame extends JFrame {
         this.currentUser = currentUser;
         buildUI();
     }
-
     private void buildUI() {
         setTitle("Grand Palace — " + hotel.getHotelName());
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1100, 700);
         setMinimumSize(new Dimension(900, 600));
         setLocationRelativeTo(null);
-
         JPanel root = new JPanel(new BorderLayout());
         root.setBackground(Theme.BG);
         root.add(buildTopBar(),  BorderLayout.NORTH);
@@ -41,7 +58,6 @@ public class DashboardFrame extends JFrame {
         root.add(buildContent(), BorderLayout.CENTER);
         setContentPane(root);
     }
-
     // ── Top bar ───────────────────────────────────────────────────────────────
     private JPanel buildTopBar() {
         JPanel bar = new JPanel(new BorderLayout()) {
@@ -69,7 +85,6 @@ public class DashboardFrame extends JFrame {
 
         JPanel right = new JPanel(new FlowLayout(FlowLayout.RIGHT, 14, 0));
         right.setOpaque(false);
-
         // Role badge
         JLabel roleBadge = new JLabel(currentUser.getRole().toUpperCase()) {
             @Override protected void paintComponent(Graphics g) {
@@ -124,16 +139,27 @@ public class DashboardFrame extends JFrame {
 
         sidebar.add(Box.createVerticalStrut(16));
 
-        boolean isStaff = !currentUser.getRole().equals("Guest");
-        if (isStaff) {
-            addNavItem(sidebar, "⊡  " + NAV_ROOMS,        NAV_ROOMS);
-            addNavItem(sidebar, "◈  " + NAV_GUESTS,       NAV_GUESTS);
-            addNavItem(sidebar, "◉  " + NAV_STAFF,        NAV_STAFF);
-            addNavItem(sidebar, "✦  " + NAV_RESERVATIONS, NAV_RESERVATIONS);
-        } else {
-            addNavItem(sidebar, "✦  " + NAV_RESERVATIONS, NAV_RESERVATIONS);
-            addNavItem(sidebar, "⊡  " + NAV_ROOMS,        NAV_ROOMS);
-        }
+       // boolean isStaff = !currentUser.getRole().equals("Guest");
+        String role = currentUser.getRole();
+
+if (role.equals("Manager")) {
+    // Full access
+    addNavItem(sidebar, "⊡  " + NAV_ROOMS,        NAV_ROOMS);
+    addNavItem(sidebar, "◈  " + NAV_GUESTS,       NAV_GUESTS);
+    addNavItem(sidebar, "◉  " + NAV_STAFF,        NAV_STAFF);
+    addNavItem(sidebar, "✦  " + NAV_RESERVATIONS, NAV_RESERVATIONS);
+
+} else if (role.equals("Staff")) {
+    // Receptionist (limited)
+    addNavItem(sidebar, "⊡  " + NAV_ROOMS,        NAV_ROOMS);
+    addNavItem(sidebar, "◈  " + NAV_GUESTS,       NAV_GUESTS);
+    addNavItem(sidebar, "✦  " + NAV_RESERVATIONS, NAV_RESERVATIONS);
+
+} else {
+    // Guest
+    addNavItem(sidebar, "✦  " + NAV_RESERVATIONS, NAV_RESERVATIONS);
+    addNavItem(sidebar, "⊡  " + NAV_ROOMS,        NAV_ROOMS);
+}
 
         sidebar.add(Box.createVerticalGlue());
 

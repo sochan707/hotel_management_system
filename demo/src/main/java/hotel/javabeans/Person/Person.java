@@ -24,8 +24,7 @@ public abstract class Person {
     public String getLastName()  { return lastName; }
     public String getGender()    { return gender; }
     public String getPhone()     { return phone; }
-
-    // ── Setters with validation ───────────────────────────────────────────────
+// ── Setters with validation ───────────────────────────────────────────────
     protected void setId(String id) {
         if (id == null || id.trim().isEmpty())
             throw new IllegalArgumentException("ID cannot be null or empty.");
