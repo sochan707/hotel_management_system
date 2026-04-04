@@ -38,11 +38,6 @@ public abstract class Person {
     public String getPhone() {
         return phone;
     }
-<<<<<<< HEAD
-        
-    // `position` belongs to Staff subclasses, not base Person via this class.
-=======
->>>>>>> w7
     
      protected void setId(String id) {
         if(id != null && !id.trim().isEmpty()) {
@@ -53,25 +48,15 @@ public abstract class Person {
     }
     
     protected void setFirstName(String firstName) {
-<<<<<<< HEAD
-        if(firstName != null && !firstName.isEmpty()) {
-            this.firstName = firstName;
-=======
         if(firstName != null && !firstName.trim().isEmpty()) {
             this.firstName = firstName.trim();
->>>>>>> w7
         } else {
             throw new IllegalArgumentException("Firstname cannot be null or empty.");
         }
     }
     protected void setLastName(String lastName) {
-<<<<<<< HEAD
-        if(lastName != null && !lastName.isEmpty()) {
-            this.lastName = lastName;
-=======
         if(lastName != null && !lastName.trim().isEmpty()) {
             this.lastName = lastName.trim();
->>>>>>> w7
         } else {
             throw new IllegalArgumentException("Lastname cannot be null or empty.");
         }
