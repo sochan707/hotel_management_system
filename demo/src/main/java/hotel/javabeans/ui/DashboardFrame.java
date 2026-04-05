@@ -1,38 +1,25 @@
 package hotel.javabeans.ui;
 
-import java.awt.BasicStroke;
-import java.awt.BorderLayout;
-import java.awt.CardLayout;
-import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.GradientPaint;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.GridLayout;
-import java.awt.RenderingHints;
-
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.SwingConstants;
-import javax.swing.border.EmptyBorder;
-
-import hotel.javabeans.Hotel;
+import hotel.javabeans.*;
 import hotel.javabeans.Login;
 
+import javax.swing.*;
+import javax.swing.border.*;
+import java.awt.*;
+import java.awt.event.*;
+
+/**
+ * Main application window after successful staff login.
+ * Role-based sidebar navigation:
+ *  - Manager     : Rooms, Guests, Staff, Reservations
+ *  - Receptionist: Rooms, Guests, Reservations (no Staff tab)
+ */
 public class DashboardFrame extends JFrame {
 
     private final Hotel hotel;
     private final Login currentUser;
 
-    private JPanel    contentArea;
+    private JPanel     contentArea;
     private CardLayout cardLayout;
 
     private static final String NAV_ROOMS        = "Rooms";
@@ -45,19 +32,22 @@ public class DashboardFrame extends JFrame {
         this.currentUser = currentUser;
         buildUI();
     }
+
     private void buildUI() {
         setTitle("Grand Palace — " + hotel.getHotelName());
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1100, 700);
         setMinimumSize(new Dimension(900, 600));
         setLocationRelativeTo(null);
+
         JPanel root = new JPanel(new BorderLayout());
         root.setBackground(Theme.BG);
-        root.add(buildTopBar(),  BorderLayout.NORTH);
-        root.add(buildSidebar(), BorderLayout.WEST);
-        root.add(buildContent(), BorderLayout.CENTER);
+        root.add(buildTopBar(),   BorderLayout.NORTH);
+        root.add(buildSidebar(),  BorderLayout.WEST);
+        root.add(buildContent(),  BorderLayout.CENTER);
         setContentPane(root);
     }
+
     // ── Top bar ───────────────────────────────────────────────────────────────
     private JPanel buildTopBar() {
         JPanel bar = new JPanel(new BorderLayout()) {
@@ -65,12 +55,9 @@ public class DashboardFrame extends JFrame {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setColor(Theme.SURFACE);
                 g2.fillRect(0, 0, getWidth(), getHeight());
-                // Pink bottom border
-                g2.setColor(Theme.PINK_DIM);
+                // Bottom shadow line
+                g2.setColor(Theme.BORDER);
                 g2.fillRect(0, getHeight()-1, getWidth(), 1);
-                // Subtle pink glow left side
-                g2.setPaint(new GradientPaint(0,0,Theme.alpha(Theme.PINK,25),300,0,new Color(0,0,0,0)));
-                g2.fillRect(0,0,300,getHeight());
                 g2.dispose();
             }
         };
@@ -78,29 +65,35 @@ public class DashboardFrame extends JFrame {
         bar.setPreferredSize(new Dimension(0, 54));
         bar.setBorder(new EmptyBorder(0, 20, 0, 20));
 
-        JLabel nameLbl = new JLabel("✦  " + hotel.getHotelName().toUpperCase());
-        nameLbl.setFont(new Font("Georgia", Font.BOLD, 16));
-        nameLbl.setForeground(Theme.PINK_SOFT);
+        // Hotel name left
+        JLabel nameLbl = new JLabel("⛨  " + hotel.getHotelName().toUpperCase());
+        nameLbl.setFont(new Font("Georgia", Font.BOLD, 15));
+        nameLbl.setForeground(Theme.ACCENT);
         bar.add(nameLbl, BorderLayout.WEST);
 
+        // User info right
         JPanel right = new JPanel(new FlowLayout(FlowLayout.RIGHT, 14, 0));
         right.setOpaque(false);
+
         // Role badge
+        Color badgeColor = currentUser.getRole().equals("Manager") ? Theme.ACCENT : Theme.GREEN;
         JLabel roleBadge = new JLabel(currentUser.getRole().toUpperCase()) {
             @Override protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                Color c = currentUser.getRole().equals("Guest") ? Theme.BLUE : Theme.PINK;
-                g2.setColor(Theme.alpha(c, 30)); g2.fillRoundRect(0,0,getWidth(),getHeight(),8,8);
-                g2.setColor(Theme.alpha(c, 100)); g2.setStroke(new BasicStroke(1f));
-                g2.drawRoundRect(0,0,getWidth()-1,getHeight()-1,8,8);
-                super.paintComponent(g); g2.dispose();
+                g2.setColor(Theme.alpha(badgeColor, 20));
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 8, 8);
+                g2.setColor(Theme.alpha(badgeColor, 100));
+                g2.setStroke(new BasicStroke(1f));
+                g2.drawRoundRect(0, 0, getWidth()-1, getHeight()-1, 8, 8);
+                super.paintComponent(g);
+                g2.dispose();
             }
         };
         roleBadge.setFont(Theme.FONT_LABEL);
-        roleBadge.setForeground(currentUser.getRole().equals("Guest") ? Theme.BLUE : Theme.PINK);
+        roleBadge.setForeground(badgeColor);
         roleBadge.setOpaque(false);
-        roleBadge.setBorder(new EmptyBorder(4,10,4,10));
+        roleBadge.setBorder(new EmptyBorder(4, 10, 4, 10));
 
         JLabel userLbl = new JLabel(currentUser.getUsername());
         userLbl.setFont(Theme.FONT_BODY);
@@ -124,51 +117,44 @@ public class DashboardFrame extends JFrame {
         JPanel sidebar = new JPanel() {
             @Override protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
-                g2.setPaint(new GradientPaint(0,0,new Color(0x1E0F1A),0,getHeight(),new Color(0x13080F)));
-                g2.fillRect(0,0,getWidth(),getHeight());
-                // Pink right border
-                g2.setColor(Theme.PINK_DIM);
-                g2.fillRect(getWidth()-1,0,1,getHeight());
+                g2.setColor(Theme.SURFACE);
+                g2.fillRect(0, 0, getWidth(), getHeight());
+                // Right border
+                g2.setColor(Theme.BORDER);
+                g2.fillRect(getWidth()-1, 0, 1, getHeight());
                 g2.dispose();
             }
         };
         sidebar.setLayout(new BoxLayout(sidebar, BoxLayout.Y_AXIS));
         sidebar.setOpaque(false);
-        sidebar.setPreferredSize(new Dimension(200, 0));
+        sidebar.setPreferredSize(new Dimension(210, 0));
         sidebar.setBorder(new EmptyBorder(20, 0, 20, 0));
 
         sidebar.add(Box.createVerticalStrut(16));
 
-       // boolean isStaff = !currentUser.getRole().equals("Guest");
         String role = currentUser.getRole();
 
-if (role.equals("Manager")) {
-    // Full access
-    addNavItem(sidebar, "⊡  " + NAV_ROOMS,        NAV_ROOMS);
-    addNavItem(sidebar, "◈  " + NAV_GUESTS,       NAV_GUESTS);
-    addNavItem(sidebar, "◉  " + NAV_STAFF,        NAV_STAFF);
-    addNavItem(sidebar, "✦  " + NAV_RESERVATIONS, NAV_RESERVATIONS);
-
-} else if (role.equals("Staff")) {
-    // Receptionist (limited)
-    addNavItem(sidebar, "⊡  " + NAV_ROOMS,        NAV_ROOMS);
-    addNavItem(sidebar, "◈  " + NAV_GUESTS,       NAV_GUESTS);
-    addNavItem(sidebar, "✦  " + NAV_RESERVATIONS, NAV_RESERVATIONS);
-
-} else {
-    // Guest
-    addNavItem(sidebar, "✦  " + NAV_RESERVATIONS, NAV_RESERVATIONS);
-    addNavItem(sidebar, "⊡  " + NAV_ROOMS,        NAV_ROOMS);
-}
+        if (role.equals("Manager")) {
+            // Full access
+            addNavItem(sidebar, "🏠   " + NAV_ROOMS,        NAV_ROOMS);
+            addNavItem(sidebar, "👤   " + NAV_GUESTS,       NAV_GUESTS);
+            addNavItem(sidebar, "👔   " + NAV_STAFF,        NAV_STAFF);
+            addNavItem(sidebar, "📋   " + NAV_RESERVATIONS, NAV_RESERVATIONS);
+        } else {
+            // Receptionist — no Staff management
+            addNavItem(sidebar, "🏠   " + NAV_ROOMS,        NAV_ROOMS);
+            addNavItem(sidebar, "👤   " + NAV_GUESTS,       NAV_GUESTS);
+            addNavItem(sidebar, "📋   " + NAV_RESERVATIONS, NAV_RESERVATIONS);
+        }
 
         sidebar.add(Box.createVerticalGlue());
 
-        // Stats section
-        JLabel statsHeader = new JLabel("  OVERVIEW");
-        statsHeader.setFont(new Font("SansSerif", Font.BOLD, 9));
-        statsHeader.setForeground(Theme.PINK_DIM);
-        statsHeader.setAlignmentX(LEFT_ALIGNMENT);
-        sidebar.add(statsHeader);
+        // Stats
+        JLabel overviewLbl = new JLabel("  OVERVIEW");
+        overviewLbl.setFont(new Font("SansSerif", Font.BOLD, 9));
+        overviewLbl.setForeground(Theme.TEXT_DIM);
+        overviewLbl.setAlignmentX(LEFT_ALIGNMENT);
+        sidebar.add(overviewLbl);
         sidebar.add(Box.createVerticalStrut(6));
         sidebar.add(buildSidebarStats());
         sidebar.add(Box.createVerticalStrut(16));
@@ -181,13 +167,13 @@ if (role.equals("Manager")) {
             @Override protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 if (this == activeNavBtn) {
-                    g2.setColor(Theme.alpha(Theme.PINK, 22));
+                    g2.setColor(Theme.alpha(Theme.ACCENT, 12));
                     g2.fillRect(0, 0, getWidth(), getHeight());
-                    // Active pink left bar
-                    g2.setPaint(new GradientPaint(0,0,Theme.PINK,3,0,Theme.PINK_DIM));
+                    // Active left bar
+                    g2.setColor(Theme.ACCENT);
                     g2.fillRect(0, 0, 3, getHeight());
                 } else if (getModel().isRollover()) {
-                    g2.setColor(Theme.alpha(Theme.PINK, 12));
+                    g2.setColor(Theme.alpha(Theme.ACCENT, 7));
                     g2.fillRect(0, 0, getWidth(), getHeight());
                 }
                 g2.dispose();
@@ -196,7 +182,7 @@ if (role.equals("Manager")) {
             @Override protected void paintBorder(Graphics g) {}
         };
         btn.setFont(new Font("SansSerif", Font.PLAIN, 13));
-        btn.setForeground(this == null ? Theme.TEXT_DIM : Theme.TEXT_DIM);
+        btn.setForeground(Theme.TEXT_DIM);
         btn.setHorizontalAlignment(SwingConstants.LEFT);
         btn.setContentAreaFilled(false);
         btn.setBorderPainted(false);
@@ -208,14 +194,14 @@ if (role.equals("Manager")) {
         btn.addActionListener(e -> {
             if (activeNavBtn != null) activeNavBtn.setForeground(Theme.TEXT_DIM);
             activeNavBtn = btn;
-            btn.setForeground(Theme.PINK_SOFT);
+            btn.setForeground(Theme.ACCENT);
             cardLayout.show(contentArea, cardName);
             sidebar.repaint();
         });
 
         if (activeNavBtn == null) {
             activeNavBtn = btn;
-            btn.setForeground(Theme.PINK_SOFT);
+            btn.setForeground(Theme.ACCENT);
         }
         sidebar.add(btn);
     }
@@ -228,20 +214,19 @@ if (role.equals("Manager")) {
         p.add(statLine("Guests", String.valueOf(hotel.getTotalGuests())));
         p.add(statLine("Staff",  String.valueOf(hotel.getTotalStaff())));
 
+        // Separator line above stats
+        JPanel sep = new JPanel() {
+            @Override protected void paintComponent(Graphics g) {
+                g.setColor(Theme.BORDER);
+                g.fillRect(0, 0, getWidth(), 1);
+            }
+        };
+        sep.setPreferredSize(new Dimension(0, 1));
+        sep.setOpaque(false);
+
         JPanel wrapper = new JPanel(new BorderLayout());
         wrapper.setOpaque(false);
         wrapper.setBorder(new EmptyBorder(0, 14, 0, 14));
-
-        // Pink separator line
-        JPanel sep = new JPanel() {
-            @Override protected void paintComponent(Graphics g) {
-                Graphics2D g2 = (Graphics2D) g.create();
-                g2.setPaint(new GradientPaint(0,0,Theme.PINK_DIM,getWidth(),0,new Color(0,0,0,0)));
-                g2.fillRect(0,0,getWidth(),1); g2.dispose();
-            }
-        };
-        sep.setPreferredSize(new Dimension(0,1)); sep.setOpaque(false);
-
         wrapper.add(sep, BorderLayout.NORTH);
         wrapper.add(p,   BorderLayout.CENTER);
         return wrapper;
@@ -251,15 +236,17 @@ if (role.equals("Manager")) {
         JPanel row = new JPanel(new BorderLayout());
         row.setOpaque(false);
         JLabel lbl = new JLabel(label);
-        lbl.setFont(Theme.FONT_SMALL); lbl.setForeground(Theme.TEXT_DIM);
+        lbl.setFont(Theme.FONT_SMALL);
+        lbl.setForeground(Theme.TEXT_DIM);
         JLabel val = new JLabel(value);
-        val.setFont(new Font("SansSerif", Font.BOLD, 12)); val.setForeground(Theme.PINK_SOFT);
+        val.setFont(new Font("SansSerif", Font.BOLD, 12));
+        val.setForeground(Theme.ACCENT);
         row.add(lbl, BorderLayout.WEST);
         row.add(val, BorderLayout.EAST);
         return row;
     }
 
-    // ── Content area ──────────────────────────────────────────────────────────
+    // ── Content ───────────────────────────────────────────────────────────────
     private JPanel buildContent() {
         cardLayout  = new CardLayout();
         contentArea = new JPanel(cardLayout);

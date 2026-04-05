@@ -22,35 +22,38 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.JTableHeader;
 
-/**
- * Central design tokens — deep dark background, rose-pink accents.
- */
 public final class Theme {
 
     private Theme() {}
 
-    // ── Palette ───────────────────────────────────────────────────────────────
-    public static final Color BG        = new Color(0x13080F);
-    public static final Color SURFACE   = new Color(0x1E0F1A);
-    public static final Color CARD      = new Color(0x2A1422);
-    public static final Color BORDER    = new Color(0x3D1F30);
+    // ── Palette — Light / White theme ─────────────────────────────────────────
+    public static final Color BG       = new Color(0xF5F6FA);   // page background
+    public static final Color SURFACE  = new Color(0xFFFFFF);   // cards & panels
+    public static final Color CARD     = new Color(0xF0F2F8);   // input fields
+    public static final Color BORDER   = new Color(0xDDE1EE);   // borders / dividers
 
-    public static final Color PINK      = new Color(0xE8437A);
-    public static final Color PINK_SOFT = new Color(0xF472A8);
-    public static final Color PINK_DIM  = new Color(0x8C2248);
-    public static final Color PINK_GLOW = new Color(0xFF6B9D);
+    // Primary accent — deep navy blue
+    public static final Color ACCENT      = new Color(0x2D4EAA);
+    public static final Color ACCENT_SOFT = new Color(0x4A6FD4);
+    public static final Color ACCENT_DIM  = new Color(0x8AA3DC);
+    public static final Color ACCENT_GLOW = new Color(0x6080E0);
 
-    // Keep GOLD alias so DashboardFrame's roleBadge compile if referenced
-    public static final Color GOLD      = PINK;
+    // Legacy aliases so existing panels compile without changes
+    public static final Color PINK      = ACCENT;
+    public static final Color PINK_SOFT = ACCENT_SOFT;
+    public static final Color PINK_DIM  = ACCENT_DIM;
+    public static final Color PINK_GLOW = ACCENT_GLOW;
+    public static final Color GOLD      = new Color(0xC8952A);
 
-    public static final Color TEXT      = new Color(0xF5E6EF);
-    public static final Color TEXT_DIM  = new Color(0xA07088);
+    public static final Color TEXT      = new Color(0x1A2240);
+    public static final Color TEXT_DIM  = new Color(0x7A849C);
 
-    public static final Color GREEN     = new Color(0x4ADE80);
-    public static final Color RED       = new Color(0xFF6B6B);
-    public static final Color YELLOW    = new Color(0xFBBF24);
-    public static final Color BLUE      = new Color(0x7DD3FC);
+    public static final Color GREEN     = new Color(0x1A8044);
+    public static final Color RED       = new Color(0xCC2828);
+    public static final Color YELLOW    = new Color(0xB87010);
+    public static final Color BLUE      = new Color(0x1A5BAA);
 
     // ── Fonts ─────────────────────────────────────────────────────────────────
     public static final Font FONT_TITLE  = new Font("Georgia",    Font.BOLD,  20);
@@ -60,12 +63,12 @@ public final class Theme {
     public static final Font FONT_LABEL  = new Font("SansSerif",  Font.BOLD,  10);
     public static final Font FONT_MONO   = new Font("Monospaced", Font.PLAIN, 11);
 
+    // ── Utility ───────────────────────────────────────────────────────────────
     public static Color alpha(Color c, int a) {
-        return new Color(c.getRed(), c.getGreen(), c.getBlue(), a);
+        return new Color(c.getRed(), c.getGreen(), c.getBlue(), Math.max(0, Math.min(255, a)));
     }
 
     // ── Component factories ───────────────────────────────────────────────────
-
     public static JLabel label(String text, Font font, Color color) {
         JLabel l = new JLabel(text);
         l.setFont(font);
@@ -74,10 +77,10 @@ public final class Theme {
     }
 
     public static JTextField textField() {
-        JTextField f = new JTextField();
-        f.setBackground(new Color(0x1A0A14));
+        final JTextField f = new JTextField();
+        f.setBackground(SURFACE);
         f.setForeground(TEXT);
-        f.setCaretColor(PINK_SOFT);
+        f.setCaretColor(ACCENT);
         f.setFont(FONT_BODY);
         setBorderNormal(f);
         f.addFocusListener(new java.awt.event.FocusAdapter() {
@@ -88,10 +91,10 @@ public final class Theme {
     }
 
     public static JPasswordField passwordField() {
-        JPasswordField f = new JPasswordField();
-        f.setBackground(new Color(0x1A0A14));
+        final JPasswordField f = new JPasswordField();
+        f.setBackground(SURFACE);
         f.setForeground(TEXT);
-        f.setCaretColor(PINK_SOFT);
+        f.setCaretColor(ACCENT);
         f.setFont(FONT_BODY);
         setBorderNormal(f);
         f.addFocusListener(new java.awt.event.FocusAdapter() {
@@ -101,28 +104,29 @@ public final class Theme {
         return f;
     }
 
-    private static void setBorderNormal(JComponent f) {
-        f.setBorder(BorderFactory.createCompoundBorder(
+    private static void setBorderNormal(JComponent c) {
+        c.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createLineBorder(BORDER, 1),
             BorderFactory.createEmptyBorder(7, 11, 7, 11)));
     }
-    private static void setBorderFocus(JComponent f) {
-        f.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(PINK_DIM, 1),
+
+    private static void setBorderFocus(JComponent c) {
+        c.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(ACCENT_DIM, 1),
             BorderFactory.createEmptyBorder(7, 11, 7, 11)));
     }
 
     public static JComboBox<String> comboBox(String... items) {
         JComboBox<String> cb = new JComboBox<>(items);
-        cb.setBackground(CARD);
+        cb.setBackground(SURFACE);
         cb.setForeground(TEXT);
         cb.setFont(FONT_BODY);
         cb.setBorder(BorderFactory.createLineBorder(BORDER, 1));
         cb.setRenderer(new javax.swing.DefaultListCellRenderer() {
-            @Override public Component getListCellRendererComponent(JList<?> list,
-                    Object value, int index, boolean isSelected, boolean hasFocus) {
-                super.getListCellRendererComponent(list, value, index, isSelected, hasFocus);
-                setBackground(isSelected ? PINK_DIM : CARD);
+            public Component getListCellRendererComponent(JList<?> list, Object value,
+                    int index, boolean isSelected, boolean cellHasFocus) {
+                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                setBackground(isSelected ? alpha(ACCENT, 30) : SURFACE);
                 setForeground(TEXT);
                 setBorder(new EmptyBorder(4, 8, 4, 8));
                 return this;
@@ -136,9 +140,10 @@ public final class Theme {
             @Override protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                Color base = getModel().isPressed() ? PINK_DIM
-                           : getModel().isRollover() ? PINK_GLOW : PINK;
-                g2.setPaint(new GradientPaint(0, 0, base.brighter(), 0, getHeight(), base));
+                Color c = getModel().isPressed() ? ACCENT.darker()
+                        : getModel().isRollover() ? ACCENT_SOFT
+                        : ACCENT;
+                g2.setPaint(new GradientPaint(0, 0, c, 0, getHeight(), c.darker()));
                 g2.fillRoundRect(0, 0, getWidth(), getHeight(), 8, 8);
                 g2.dispose();
                 super.paintComponent(g);
@@ -161,18 +166,18 @@ public final class Theme {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 if (getModel().isRollover()) {
-                    g2.setColor(alpha(PINK, 22));
+                    g2.setColor(alpha(ACCENT, 14));
                     g2.fillRoundRect(0, 0, getWidth(), getHeight(), 8, 8);
                 }
-                g2.setColor(PINK_DIM);
+                g2.setColor(BORDER);
                 g2.setStroke(new BasicStroke(1f));
-                g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 8, 8);
+                g2.drawRoundRect(0, 0, getWidth()-1, getHeight()-1, 8, 8);
                 g2.dispose();
                 super.paintComponent(g);
             }
             @Override protected void paintBorder(Graphics g) {}
         };
-        b.setBackground(CARD);
+        b.setBackground(SURFACE);
         b.setForeground(TEXT_DIM);
         b.setFont(FONT_BODY);
         b.setContentAreaFilled(false);
@@ -188,9 +193,10 @@ public final class Theme {
             @Override protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                Color base = getModel().isPressed() ? RED.darker()
-                           : getModel().isRollover() ? RED.brighter() : RED;
-                g2.setColor(base);
+                Color c = getModel().isPressed() ? RED.darker()
+                        : getModel().isRollover() ? RED.brighter()
+                        : RED;
+                g2.setColor(c);
                 g2.fillRoundRect(0, 0, getWidth(), getHeight(), 8, 8);
                 g2.dispose();
                 super.paintComponent(g);
@@ -213,18 +219,17 @@ public final class Theme {
         table.setFont(FONT_BODY);
         table.setRowHeight(34);
         table.setGridColor(BORDER);
-        table.setSelectionBackground(alpha(PINK, 80));
-        table.setSelectionForeground(Color.WHITE);
+        table.setSelectionBackground(alpha(ACCENT, 35));
+        table.setSelectionForeground(TEXT);
         table.setShowVerticalLines(false);
         table.setShowHorizontalLines(true);
         table.setIntercellSpacing(new Dimension(0, 1));
-
-        javax.swing.table.JTableHeader header = table.getTableHeader();
-        header.setBackground(CARD);
-        header.setForeground(PINK_SOFT);
-        header.setFont(FONT_LABEL);
-        header.setBorder(BorderFactory.createMatteBorder(0, 0, 2, 0, PINK_DIM));
-        header.setReorderingAllowed(false);
+        JTableHeader h = table.getTableHeader();
+        h.setBackground(CARD);
+        h.setForeground(TEXT_DIM);
+        h.setFont(FONT_LABEL);
+        h.setBorder(BorderFactory.createMatteBorder(0, 0, 2, 0, BORDER));
+        h.setReorderingAllowed(false);
     }
 
     public static JScrollPane scrollPane(JTable table) {
