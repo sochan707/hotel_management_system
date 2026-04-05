@@ -320,20 +320,23 @@ public class Booking {
 
     @Override
     public String toString() {
-        return "Booking{" +
-            "bookingId='" + bookingId + '\'' +
-            ", reservationId='" + reservationId + '\'' +
-            ", guestName='" + guestName + '\'' +
-            ", phone='" + phone + '\'' +
-            ", roomTypes=" + roomTypes +
-            ", totalRooms=" + getTotalRooms() +
-            ", checkInDate=" + checkInDate +
-            ", checkOutDate=" + checkOutDate +
-            ", nights=" + getNights() +
-            ", bookingStatus=" + bookingStatus +
-            ", bookingCreationDate=" + bookingCreationDate +
-            ", specialRequests='" + specialRequests + '\'' +
-            ", actualRoomAssignments=" + actualRoomAssignments +
-            '}';
+        return "\n================= BOOKING RECEIPT =================\n" +
+            "Booking ID        : " + bookingId + "\n" +
+            "Reservation ID    : " + reservationId + "\n" +
+            "Guest Name        : " + guestName + "\n" +
+            "Phone             : " + phone + "\n" +
+            "---------------------------------------------------\n" +
+            "Room Types        : " + roomTypes + "\n" +
+            "Total Rooms       : " + getTotalRooms() + "\n" +
+            "Check-In Date     : " + checkInDate + "\n" +
+            "Check-Out Date    : " + checkOutDate + "\n" +
+            "Number of Nights  : " + getNights() + "\n" +
+            "---------------------------------------------------\n" +
+            "Booking Status    : " + bookingStatus + "\n" +
+            "Created On        : " + bookingCreationDate + "\n" +
+            "Special Requests  : " + (specialRequests != null ? specialRequests : "None") + "\n" +
+            "---------------------------------------------------\n" +
+            "Room Assignments  : " + actualRoomAssignments + "\n" +
+            "===================================================\n";
     }
 }
