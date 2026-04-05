@@ -215,18 +215,20 @@ public class Reservation {
 
     @Override
     public String toString() {
-        return "Reservation{" +
-               "reservationId='"   + reservationId  + '\'' +
-               ", guestName='"     + guestName       + '\'' +
-               ", phone='"         + phone           + '\'' +
-               ", roomTypes="      + roomTypes       +
-               ", totalRooms="     + getTotalRooms() +
-               ", checkInDate="    + checkInDate     +
-               ", checkOutDate="   + checkOutDate    +
-               ", estimatedPrice=" + estimatedPrice  +
-               ", depositAmount="  + depositAmount   +
-               ", depositPaid="    + depositPaid     +
-               ", confirmed="      + confirmed       +
-               '}';
+        return "\n================ RESERVATION RECEIPT ================\n" +
+            "Reservation ID    : " + reservationId + "\n" +
+            "Guest Name       : " + guestName + "\n" +
+            "Phone            : " + phone + "\n" +
+            "---------------------------------------------------\n" +
+            "Room Types       : " + roomTypes + "\n" +
+            "Total Rooms      : " + getTotalRooms() + "\n" +
+            "Check-In Date    : " + checkInDate + "\n" +
+            "Check-Out Date   : " + checkOutDate + "\n" +
+            "---------------------------------------------------\n" +
+            "Estimated Price  : $" + estimatedPrice + "\n" +
+            "Deposit Amount   : $" + depositAmount + "\n" +
+            "Deposit Paid     : " + (depositPaid ? "Yes" : "No") + "\n" +
+            "Confirmed        : " + (confirmed ? "Yes" : "No") + "\n" +
+            "===================================================\n";
     }
 }
