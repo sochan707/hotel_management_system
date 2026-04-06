@@ -53,7 +53,9 @@ import javax.swing.table.TableCellRenderer;
 
 import hotel.javabeans.Booking;
 import hotel.javabeans.Hotel;
+import hotel.javabeans.Invoice;
 import hotel.javabeans.Reservation;
+import hotel.javabeans.Room;
 import hotel.javabeans.TypeOfRoom;
 
 public class BookingsPanel extends JPanel {
@@ -64,6 +66,10 @@ public class BookingsPanel extends JPanel {
     private DefaultTableModel tableModel;
     private JTable table;
     private JLabel totalLabel;
+
+    // Wired by DashboardFrame so checkout can refresh the invoices tab
+    private InvoicesPanel invoicesPanel;
+    public void setInvoicesPanel(InvoicesPanel ip) { this.invoicesPanel = ip; }
 
     private static final String[] COLUMNS = {
         "Booking ID", "Guest Name", "Phone",
@@ -101,8 +107,9 @@ public class BookingsPanel extends JPanel {
                 g2.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
                 g2.setColor(Theme.alpha(Theme.PINK, 80));
                 g2.setStroke(new BasicStroke(1f));
-                g2.drawRoundRect(0, 0, getWidth()-1, getHeight()-1, 10, 10);
-                super.paintComponent(g); g2.dispose();
+                g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 10, 10);
+                super.paintComponent(g);
+                g2.dispose();
             }
         };
         totalLabel.setFont(new Font("SansSerif", Font.BOLD, 11));
@@ -171,26 +178,28 @@ public class BookingsPanel extends JPanel {
         JButton checkOutBtn = Theme.ghostButton("⬡  Check Out");
         checkOutBtn.addActionListener(e -> doStatusChange("CHECKOUT"));
 
-        JButton cancelBtn   = Theme.dangerButton("✕  Cancel");
+        JButton cancelBtn = Theme.dangerButton("✕  Cancel");
         cancelBtn.addActionListener(e -> doStatusChange("CANCEL"));
 
-        JButton assignBtn   = Theme.ghostButton("🔑  Assign Room");
+        JButton assignBtn = Theme.ghostButton("🔑  Assign Room");
         assignBtn.setPreferredSize(new Dimension(130, 34));
         assignBtn.addActionListener(e -> assignRoomDialog());
 
-        JButton viewBtn     = Theme.ghostButton("👁  Details");
+        JButton viewBtn = Theme.ghostButton("👁  Details");
         viewBtn.addActionListener(e -> viewDetails());
 
         bar.add(fromResBtn);
         bar.add(walkInBtn);
         bar.add(new JSeparator(SwingConstants.VERTICAL) {{
-            setPreferredSize(new Dimension(1, 28)); setForeground(Theme.BORDER);
+            setPreferredSize(new Dimension(1, 28));
+            setForeground(Theme.BORDER);
         }});
         bar.add(checkInBtn);
         bar.add(checkOutBtn);
         bar.add(cancelBtn);
         bar.add(new JSeparator(SwingConstants.VERTICAL) {{
-            setPreferredSize(new Dimension(1, 28)); setForeground(Theme.BORDER);
+            setPreferredSize(new Dimension(1, 28));
+            setForeground(Theme.BORDER);
         }});
         bar.add(assignBtn);
         bar.add(viewBtn);
@@ -224,7 +233,6 @@ public class BookingsPanel extends JPanel {
     public void refreshTable() {
         tableModel.setRowCount(0);
         for (Booking b : bookings) {
-            // FIX: use getTypeOfRooms() which returns Map<TypeOfRoom, Integer>
             String rt = b.getTypeOfRooms().entrySet().stream()
                 .map(e -> e.getValue() + "×" + e.getKey().getDisplayName())
                 .reduce((a, x) -> a + ", " + x).orElse("-");
@@ -244,11 +252,11 @@ public class BookingsPanel extends JPanel {
 
     private Color statusColour(String s) {
         return switch (s) {
-            case "UPCOMING"   -> Theme.BLUE;
-            case "CHECKIN"    -> Theme.GREEN;
-            case "CHECKOUT"   -> Theme.TEXT_DIM;
-            case "CANCELLED"  -> Theme.RED;
-            default           -> Theme.TEXT;
+            case "UPCOMING"  -> Theme.BLUE;
+            case "CHECKIN"   -> Theme.GREEN;
+            case "CHECKOUT"  -> Theme.TEXT_DIM;
+            case "CANCELLED" -> Theme.RED;
+            default          -> Theme.TEXT;
         };
     }
 
@@ -296,7 +304,7 @@ public class BookingsPanel extends JPanel {
         prompt.setFont(Theme.FONT_BODY);
         prompt.setForeground(Theme.TEXT_DIM);
         content.add(prompt, BorderLayout.NORTH);
-        content.add(sp, BorderLayout.CENTER);
+        content.add(sp,     BorderLayout.CENTER);
 
         int ok = JOptionPane.showConfirmDialog(this, content,
             "Book from Reservation", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
@@ -315,7 +323,7 @@ public class BookingsPanel extends JPanel {
         }
     }
 
-    // ── Walk-in booking dialog ────────────────────────────────────────────────
+    // ── Walk-in dialog ────────────────────────────────────────────────────────
     private void showWalkInDialog() {
         JDialog dlg = styledDialog("Walk-in Booking", 480, 460);
 
@@ -351,7 +359,6 @@ public class BookingsPanel extends JPanel {
                 int d = Integer.parseInt(doubleQty.getText().trim());
                 int t = Integer.parseInt(tripleQty.getText().trim());
 
-                // FIX: use TypeOfRoom directly (no inner class)
                 Map<TypeOfRoom, Integer> types = new EnumMap<>(TypeOfRoom.class);
                 if (s > 0) types.put(TypeOfRoom.SINGLE, s);
                 if (d > 0) types.put(TypeOfRoom.DOUBLE, d);
@@ -396,8 +403,11 @@ public class BookingsPanel extends JPanel {
         try {
             switch (action) {
                 case "CHECKIN"  -> b.checkIn();
-                case "CHECKOUT" -> b.checkOut();
-                case "CANCEL"   -> {
+                case "CHECKOUT" -> {
+                    b.checkOut();
+                    generateInvoiceForBooking(b);
+                }
+                case "CANCEL" -> {
                     int ok = JOptionPane.showConfirmDialog(this,
                         "Cancel booking for " + b.getGuestName() + "?",
                         "Confirm Cancellation", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
@@ -408,6 +418,48 @@ public class BookingsPanel extends JPanel {
             refreshTable();
         } catch (IllegalStateException ex) {
             showError(ex.getMessage());
+        }
+    }
+
+    /**
+     * Automatically generates an Invoice when a guest checks out.
+     * Implements the Booking → Invoice step of the system workflow.
+     */
+    private void generateInvoiceForBooking(Booking b) {
+        try {
+            Map<TypeOfRoom, Double> ratesPerNight = new java.util.EnumMap<>(TypeOfRoom.class);
+            for (Room r : hotel.getRooms()) {
+                ratesPerNight.putIfAbsent(r.getTypeOfRoom(), r.getPrice());
+            }
+
+            int totalRooms = b.getTotalRooms();
+            int guestCount = Math.max(1, totalRooms);
+
+            Invoice invoice = new Invoice(
+                b.getBookingId(),
+                b.getTypeOfRooms(),
+                ratesPerNight,
+                (int) b.getNights(),
+                guestCount,
+                0.0,   // discount
+                0.0,   // deposit
+                null   // payment — set later via InvoicesPanel
+            );
+            invoice.recalculateInvoice();
+            hotel.addInvoice(invoice);
+
+            // Refresh InvoicesPanel so the new invoice appears immediately
+            if (invoicesPanel != null) invoicesPanel.refreshTable();
+
+            JOptionPane.showMessageDialog(this,
+                String.format("<html><b>Invoice generated for %s</b><br>" +
+                    "Invoice ID: %s<br>Total Due: $%.2f<br><br>" +
+                    "<i>Go to the Invoices tab to process payment.</i></html>",
+                    b.getGuestName(), invoice.getInvoiceId(), invoice.getTotalAmount()),
+                "Invoice Created", JOptionPane.INFORMATION_MESSAGE);
+
+        } catch (Exception ex) {
+            showError("Could not generate invoice: " + ex.getMessage());
         }
     }
 
@@ -427,7 +479,6 @@ public class BookingsPanel extends JPanel {
         form.setBackground(Theme.SURFACE);
         form.setBorder(new EmptyBorder(16, 20, 10, 20));
 
-        // FIX: use TypeOfRoom.name() directly
         String[] typeNames = b.getTypeOfRooms().keySet().stream()
             .map(TypeOfRoom::name).toArray(String[]::new);
         JComboBox<String> typeCb = Theme.comboBox(typeNames);
@@ -436,17 +487,20 @@ public class BookingsPanel extends JPanel {
         roomNumF.setToolTipText("Enter an integer room number, e.g. 101");
 
         GridBagConstraints gc = new GridBagConstraints();
-        gc.insets = new Insets(6, 4, 6, 4); gc.fill = GridBagConstraints.HORIZONTAL;
+        gc.insets = new Insets(6, 4, 6, 4);
+        gc.fill   = GridBagConstraints.HORIZONTAL;
 
-        gc.gridx=0; gc.gridy=0; gc.weightx=0;
+        gc.gridx = 0; gc.gridy = 0; gc.weightx = 0;
         form.add(Theme.label("Room Type:", Theme.FONT_BODY, Theme.TEXT_DIM), gc);
-        gc.gridx=1; gc.weightx=1; form.add(typeCb, gc);
+        gc.gridx = 1; gc.weightx = 1;
+        form.add(typeCb, gc);
 
-        gc.gridx=0; gc.gridy=1; gc.weightx=0;
+        gc.gridx = 0; gc.gridy = 1; gc.weightx = 0;
         form.add(Theme.label("Room Number:", Theme.FONT_BODY, Theme.TEXT_DIM), gc);
-        gc.gridx=1; gc.weightx=1; form.add(roomNumF, gc);
+        gc.gridx = 1; gc.weightx = 1;
+        form.add(roomNumF, gc);
 
-        gc.gridx=0; gc.gridy=2; gc.gridwidth=2;
+        gc.gridx = 0; gc.gridy = 2; gc.gridwidth = 2;
         JLabel assigned = Theme.label("Assigned: " + formatAssignments(b), Theme.FONT_SMALL, Theme.TEXT_DIM);
         form.add(assigned, gc);
 
@@ -456,7 +510,6 @@ public class BookingsPanel extends JPanel {
 
         assignBtn.addActionListener(e -> {
             try {
-                // FIX: use TypeOfRoom.valueOf directly
                 TypeOfRoom type = TypeOfRoom.valueOf((String) typeCb.getSelectedItem());
                 int num = Integer.parseInt(roomNumF.getText().trim());
                 b.assignRoom(type, num);
@@ -489,7 +542,9 @@ public class BookingsPanel extends JPanel {
         JPanel btns = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 10));
         btns.setBackground(Theme.CARD);
         btns.setBorder(new MatteBorder(1, 0, 0, 0, Theme.BORDER));
-        btns.add(closeBtn); btns.add(removeBtn); btns.add(assignBtn);
+        btns.add(closeBtn);
+        btns.add(removeBtn);
+        btns.add(assignBtn);
 
         dlg.add(form, BorderLayout.CENTER);
         dlg.add(btns, BorderLayout.SOUTH);
@@ -512,7 +567,6 @@ public class BookingsPanel extends JPanel {
         detailRow(body, "Reservation ID",   b.getReservationId());
         detailRow(body, "Guest Name",       b.getGuestName());
         detailRow(body, "Phone",            b.getPhone());
-        // FIX: use getTypeOfRooms()
         detailRow(body, "Room Types",       formatRoomTypesBooking(b.getTypeOfRooms()));
         detailRow(body, "Total Rooms",      String.valueOf(b.getTotalRooms()));
         detailRow(body, "Check-In",         b.getCheckInDate().toString());
@@ -557,8 +611,6 @@ public class BookingsPanel extends JPanel {
     }
 
     // ── Format helpers ────────────────────────────────────────────────────────
-
-    // FIX: both Reservation and Booking use Map<TypeOfRoom, Integer>
     private String formatRoomTypes(Map<TypeOfRoom, Integer> map) {
         return map.entrySet().stream()
             .map(e -> e.getValue() + "×" + e.getKey().getDisplayName())
@@ -572,7 +624,6 @@ public class BookingsPanel extends JPanel {
     }
 
     private String formatAssignments(Booking b) {
-        // FIX: getActualRoomAssignments() returns Map<TypeOfRoom, List<Integer>>
         Map<TypeOfRoom, List<Integer>> map = b.getActualRoomAssignments();
         if (map.isEmpty()) return "None";
         return map.entrySet().stream()
