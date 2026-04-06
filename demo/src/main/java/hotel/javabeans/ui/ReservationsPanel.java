@@ -44,16 +44,11 @@ import javax.swing.table.TableCellRenderer;
 import hotel.javabeans.Booking;
 import hotel.javabeans.Hotel;
 import hotel.javabeans.Reservation;
+import hotel.javabeans.TypeOfRoom;
 
 public class ReservationsPanel extends JPanel {
 
     private final Hotel hotel;
-
-    /**
-     * Optional reference to BookingsPanel so "Book Now" can push a new Booking
-     * directly into the bookings list without navigating away.
-     * Set by DashboardFrame after both panels are created.
-     */
     private BookingsPanel bookingsPanel;
 
     private DefaultTableModel tableModel;
@@ -74,7 +69,6 @@ public class ReservationsPanel extends JPanel {
         add(buildToolbar(), BorderLayout.SOUTH);
     }
 
-    /** Called by DashboardFrame after BookingsPanel is created. */
     public void setBookingsPanel(BookingsPanel bp) {
         this.bookingsPanel = bp;
     }
@@ -93,7 +87,6 @@ public class ReservationsPanel extends JPanel {
         text.add(Theme.sectionSub("Create and manage guest reservations — confirm to enable booking"));
         h.add(text, BorderLayout.WEST);
 
-        // Workflow hint badge
         JLabel hint = new JLabel("Flow:  New → Deposit → Confirm → Book") {
             @Override protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
@@ -139,7 +132,6 @@ public class ReservationsPanel extends JPanel {
         Theme.styleTable(table);
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-        // Centre-align Paid and Confirmed columns
         DefaultTableCellRenderer centre = new DefaultTableCellRenderer();
         centre.setHorizontalAlignment(SwingConstants.CENTER);
         table.getColumnModel().getColumn(7).setCellRenderer(centre);
@@ -160,7 +152,7 @@ public class ReservationsPanel extends JPanel {
         JButton depositBtn = Theme.ghostButton("💳  Mark Deposit Paid");
         depositBtn.setPreferredSize(new Dimension(170, 34));
         JButton confirmBtn = Theme.ghostButton("✓  Confirm");
-        JButton bookBtn    = Theme.primaryButton("📋  Book Now");   // ← NEW
+        JButton bookBtn    = Theme.primaryButton("📋  Book Now");
         bookBtn.setPreferredSize(new Dimension(120, 34));
         JButton removeBtn  = Theme.dangerButton("✕  Remove");
         JButton viewBtn    = Theme.ghostButton("👁  Details");
@@ -168,28 +160,23 @@ public class ReservationsPanel extends JPanel {
         addBtn.addActionListener(e -> showAddDialog());
         depositBtn.addActionListener(e -> markDeposit());
         confirmBtn.addActionListener(e -> confirmReservation());
-        bookBtn.addActionListener(e -> bookNow());          // ← NEW
+        bookBtn.addActionListener(e -> bookNow());
         removeBtn.addActionListener(e -> removeSelected());
         viewBtn.addActionListener(e -> viewDetails());
 
         bar.add(addBtn);
-
         bar.add(new JSeparator(SwingConstants.VERTICAL) {{
-            setPreferredSize(new Dimension(1, 28));
-            setForeground(Theme.BORDER);
+            setPreferredSize(new Dimension(1, 28)); setForeground(Theme.BORDER);
         }});
         bar.add(depositBtn);
         bar.add(confirmBtn);
         bar.add(bookBtn);
-
         bar.add(new JSeparator(SwingConstants.VERTICAL) {{
-            setPreferredSize(new Dimension(1, 28));
-            setForeground(Theme.BORDER);
+            setPreferredSize(new Dimension(1, 28)); setForeground(Theme.BORDER);
         }});
         bar.add(removeBtn);
         bar.add(viewBtn);
 
-        // Colour legend
         JPanel legend = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
         legend.setOpaque(false);
         legend.add(legendDot(Theme.GREEN,  "Confirmed"));
@@ -236,11 +223,11 @@ public class ReservationsPanel extends JPanel {
     private void showAddDialog() {
         JDialog dlg = styledDialog("New Reservation", 480, 450);
 
-        JTextField guestF   = Theme.textField();
-        JTextField phoneF   = Theme.textField();
-        JTextField checkInF = Theme.textField(); checkInF.setText(LocalDate.now().plusDays(1).toString());
-        JTextField checkOutF= Theme.textField(); checkOutF.setText(LocalDate.now().plusDays(3).toString());
-        JTextField priceF   = Theme.textField();
+        JTextField guestF    = Theme.textField();
+        JTextField phoneF    = Theme.textField();
+        JTextField checkInF  = Theme.textField(); checkInF.setText(LocalDate.now().plusDays(1).toString());
+        JTextField checkOutF = Theme.textField(); checkOutF.setText(LocalDate.now().plusDays(3).toString());
+        JTextField priceF    = Theme.textField();
 
         JTextField singleQty = Theme.textField(); singleQty.setText("0");
         JTextField doubleQty = Theme.textField(); doubleQty.setText("0");
@@ -258,7 +245,6 @@ public class ReservationsPanel extends JPanel {
             new JComponent[]{guestF, phoneF, checkInF, checkOutF, priceF, roomPanel}
         );
 
-        // Deposit preview label
         JLabel depositPreview = Theme.label("Deposit (40%): $0.00", Theme.FONT_SMALL, Theme.PINK_SOFT);
         priceF.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
             void update() {
@@ -289,10 +275,11 @@ public class ReservationsPanel extends JPanel {
                 int d = Integer.parseInt(doubleQty.getText().trim());
                 int t = Integer.parseInt(tripleQty.getText().trim());
 
-                Map<Reservation.RoomType, Integer> types = new EnumMap<>(Reservation.RoomType.class);
-                if (s > 0) types.put(Reservation.RoomType.SINGLE, s);
-                if (d > 0) types.put(Reservation.RoomType.DOUBLE, d);
-                if (t > 0) types.put(Reservation.RoomType.TRIPLE, t);
+                // FIX: use TypeOfRoom directly
+                Map<TypeOfRoom, Integer> types = new EnumMap<>(TypeOfRoom.class);
+                if (s > 0) types.put(TypeOfRoom.SINGLE, s);
+                if (d > 0) types.put(TypeOfRoom.DOUBLE, d);
+                if (t > 0) types.put(TypeOfRoom.TRIPLE, t);
                 if (types.isEmpty()) { showError("Add at least one room type."); return; }
 
                 Reservation res = new Reservation(
@@ -371,12 +358,10 @@ public class ReservationsPanel extends JPanel {
         }
 
         if (bookingsPanel == null) {
-            // Fallback: just show a message — DashboardFrame didn't wire the reference
             showError("BookingsPanel reference not set.\nPlease navigate to Bookings tab manually.");
             return;
         }
 
-        // Check if already booked
         for (Booking b : bookingsPanel.getBookings()) {
             if (b.getReservationId().equals(r.getReservationId())) {
                 showError("This reservation already has a booking.\nCheck the Bookings panel.");
@@ -391,7 +376,6 @@ public class ReservationsPanel extends JPanel {
 
         if (ok == JOptionPane.YES_OPTION) {
             try {
-                // Anonymous subclass to access protected Booking(Reservation) constructor
                 Booking b = new Booking(r) {};
                 bookingsPanel.addBookingDirect(b);
                 showSuccess("Booking created successfully!\n" +
@@ -429,7 +413,8 @@ public class ReservationsPanel extends JPanel {
         detailRow(body, "Reservation ID",  r.getReservationId());
         detailRow(body, "Guest Name",      r.getGuestName());
         detailRow(body, "Phone",           r.getPhone());
-        detailRow(body, "Room Types",      formatRoomTypes(r.getRoomTypes()));
+        // FIX: use getTypeOfRooms()
+        detailRow(body, "Room Types",      formatRoomTypes(r.getTypeOfRooms()));
         detailRow(body, "Total Rooms",     String.valueOf(r.getTotalRooms()));
         detailRow(body, "Check-In",        r.getCheckInDate().toString());
         detailRow(body, "Check-Out",       r.getCheckOutDate().toString());
@@ -478,9 +463,10 @@ public class ReservationsPanel extends JPanel {
         return hotel.getReservations().get(row);
     }
 
-    private String formatRoomTypes(Map<Reservation.RoomType, Integer> map) {
+    // FIX: Map<TypeOfRoom, Integer> — no inner class
+    private String formatRoomTypes(Map<TypeOfRoom, Integer> map) {
         return map.entrySet().stream()
-            .map(e -> e.getValue() + "×" + e.getKey().name())
+            .map(e -> e.getValue() + "×" + e.getKey().getDisplayName())
             .reduce((a, b) -> a + ", " + b).orElse("-");
     }
 

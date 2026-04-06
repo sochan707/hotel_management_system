@@ -54,18 +54,8 @@ import javax.swing.table.TableCellRenderer;
 import hotel.javabeans.Booking;
 import hotel.javabeans.Hotel;
 import hotel.javabeans.Reservation;
+import hotel.javabeans.TypeOfRoom;
 
-/**
- * BookingsPanel — manages Booking objects.
- *
- * Features:
- *  - Table of all bookings with status colour-coding
- *  - "Book from Reservation" — converts a confirmed Reservation → Booking
- *  - "Walk-in Booking"       — creates a Booking directly (no reservation needed)
- *  - Check In / Check Out / Cancel status transitions
- *  - View full details dialog
- *  - Assign / remove room numbers
- */
 public class BookingsPanel extends JPanel {
 
     private final Hotel hotel;
@@ -143,12 +133,10 @@ public class BookingsPanel extends JPanel {
         Theme.styleTable(table);
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-        // Centre-align Status column
         DefaultTableCellRenderer centre = new DefaultTableCellRenderer();
         centre.setHorizontalAlignment(SwingConstants.CENTER);
         table.getColumnModel().getColumn(7).setCellRenderer(centre);
 
-        // Column widths
         int[] widths = {160, 130, 110, 120, 100, 100, 55, 95};
         for (int i = 0; i < widths.length; i++)
             table.getColumnModel().getColumn(i).setPreferredWidth(widths[i]);
@@ -177,45 +165,42 @@ public class BookingsPanel extends JPanel {
         walkInBtn.setPreferredSize(new Dimension(110, 34));
         walkInBtn.addActionListener(e -> showWalkInDialog());
 
-        JButton checkInBtn = Theme.ghostButton("✓  Check In");
+        JButton checkInBtn  = Theme.ghostButton("✓  Check In");
         checkInBtn.addActionListener(e -> doStatusChange("CHECKIN"));
 
         JButton checkOutBtn = Theme.ghostButton("⬡  Check Out");
         checkOutBtn.addActionListener(e -> doStatusChange("CHECKOUT"));
 
-        JButton cancelBtn = Theme.dangerButton("✕  Cancel");
+        JButton cancelBtn   = Theme.dangerButton("✕  Cancel");
         cancelBtn.addActionListener(e -> doStatusChange("CANCEL"));
 
-        JButton assignBtn = Theme.ghostButton("🔑  Assign Room");
+        JButton assignBtn   = Theme.ghostButton("🔑  Assign Room");
         assignBtn.setPreferredSize(new Dimension(130, 34));
         assignBtn.addActionListener(e -> assignRoomDialog());
 
-        JButton viewBtn = Theme.ghostButton("👁  Details");
+        JButton viewBtn     = Theme.ghostButton("👁  Details");
         viewBtn.addActionListener(e -> viewDetails());
 
         bar.add(fromResBtn);
         bar.add(walkInBtn);
         bar.add(new JSeparator(SwingConstants.VERTICAL) {{
-            setPreferredSize(new Dimension(1, 28));
-            setForeground(Theme.BORDER);
+            setPreferredSize(new Dimension(1, 28)); setForeground(Theme.BORDER);
         }});
         bar.add(checkInBtn);
         bar.add(checkOutBtn);
         bar.add(cancelBtn);
         bar.add(new JSeparator(SwingConstants.VERTICAL) {{
-            setPreferredSize(new Dimension(1, 28));
-            setForeground(Theme.BORDER);
+            setPreferredSize(new Dimension(1, 28)); setForeground(Theme.BORDER);
         }});
         bar.add(assignBtn);
         bar.add(viewBtn);
 
-        // Legend
         JPanel legend = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
         legend.setOpaque(false);
-        legend.add(legendDot(Theme.BLUE,   "Upcoming"));
-        legend.add(legendDot(Theme.GREEN,  "Checked-in"));
-        legend.add(legendDot(Theme.TEXT_DIM,"Checked-out"));
-        legend.add(legendDot(Theme.RED,    "Cancelled"));
+        legend.add(legendDot(Theme.BLUE,     "Upcoming"));
+        legend.add(legendDot(Theme.GREEN,    "Checked-in"));
+        legend.add(legendDot(Theme.TEXT_DIM, "Checked-out"));
+        legend.add(legendDot(Theme.RED,      "Cancelled"));
 
         JPanel wrapper = new JPanel(new BorderLayout());
         wrapper.setBackground(Theme.BG);
@@ -239,8 +224,9 @@ public class BookingsPanel extends JPanel {
     public void refreshTable() {
         tableModel.setRowCount(0);
         for (Booking b : bookings) {
-            String rt = b.getRoomTypes().entrySet().stream()
-                .map(e -> e.getValue() + "×" + e.getKey().name())
+            // FIX: use getTypeOfRooms() which returns Map<TypeOfRoom, Integer>
+            String rt = b.getTypeOfRooms().entrySet().stream()
+                .map(e -> e.getValue() + "×" + e.getKey().getDisplayName())
                 .reduce((a, x) -> a + ", " + x).orElse("-");
             tableModel.addRow(new Object[]{
                 b.getBookingId().substring(0, 8) + "…",
@@ -258,17 +244,16 @@ public class BookingsPanel extends JPanel {
 
     private Color statusColour(String s) {
         return switch (s) {
-            case "UPCOMING"  -> Theme.BLUE;
-            case "CHECKIN"   -> Theme.GREEN;
-            case "CHECKOUT"  -> Theme.TEXT_DIM;
-            case "CANCELLED" -> Theme.RED;
-            default          -> Theme.TEXT;
+            case "UPCOMING"   -> Theme.BLUE;
+            case "CHECKIN"    -> Theme.GREEN;
+            case "CHECKOUT"   -> Theme.TEXT_DIM;
+            case "CANCELLED"  -> Theme.RED;
+            default           -> Theme.TEXT;
         };
     }
 
     // ── Book from Reservation ─────────────────────────────────────────────────
     private void bookFromReservation() {
-        // Filter only confirmed reservations that don't already have a booking
         List<Reservation> confirmed = new ArrayList<>();
         Set<String> bookedResIds = new HashSet<>();
         for (Booking b : bookings) bookedResIds.add(b.getReservationId());
@@ -286,10 +271,9 @@ public class BookingsPanel extends JPanel {
             return;
         }
 
-        // Build choice labels
         String[] choices = confirmed.stream()
             .map(r -> r.getGuestName() + "  |  " + r.getCheckInDate() + " → " + r.getCheckOutDate()
-                      + "  |  " + formatRoomTypes(r.getRoomTypes()))
+                      + "  |  " + formatRoomTypes(r.getTypeOfRooms()))
             .toArray(String[]::new);
 
         JList<String> list = new JList<>(choices);
@@ -320,7 +304,6 @@ public class BookingsPanel extends JPanel {
         if (ok == JOptionPane.OK_OPTION && list.getSelectedIndex() >= 0) {
             Reservation chosen = confirmed.get(list.getSelectedIndex());
             try {
-                // Anonymous subclass to access protected constructor
                 Booking b = new Booking(chosen) {};
                 bookings.add(b);
                 refreshTable();
@@ -336,13 +319,12 @@ public class BookingsPanel extends JPanel {
     private void showWalkInDialog() {
         JDialog dlg = styledDialog("Walk-in Booking", 480, 460);
 
-        JTextField nameF    = Theme.textField();
-        JTextField phoneF   = Theme.textField();
-        JTextField checkInF = Theme.textField(); checkInF.setText(LocalDate.now().toString());
-        JTextField checkOutF= Theme.textField(); checkOutF.setText(LocalDate.now().plusDays(1).toString());
-        JTextField specialF = Theme.textField(); specialF.setText("");
+        JTextField nameF     = Theme.textField();
+        JTextField phoneF    = Theme.textField();
+        JTextField checkInF  = Theme.textField(); checkInF.setText(LocalDate.now().toString());
+        JTextField checkOutF = Theme.textField(); checkOutF.setText(LocalDate.now().plusDays(1).toString());
+        JTextField specialF  = Theme.textField();
 
-        // Room type qty panel
         JTextField singleQty = Theme.textField(); singleQty.setText("0");
         JTextField doubleQty = Theme.textField(); doubleQty.setText("0");
         JTextField tripleQty = Theme.textField(); tripleQty.setText("0");
@@ -369,13 +351,13 @@ public class BookingsPanel extends JPanel {
                 int d = Integer.parseInt(doubleQty.getText().trim());
                 int t = Integer.parseInt(tripleQty.getText().trim());
 
-                Map<Booking.RoomType, Integer> types = new EnumMap<>(Booking.RoomType.class);
-                if (s > 0) types.put(Booking.RoomType.SINGLE, s);
-                if (d > 0) types.put(Booking.RoomType.DOUBLE, d);
-                if (t > 0) types.put(Booking.RoomType.TRIPLE, t);
+                // FIX: use TypeOfRoom directly (no inner class)
+                Map<TypeOfRoom, Integer> types = new EnumMap<>(TypeOfRoom.class);
+                if (s > 0) types.put(TypeOfRoom.SINGLE, s);
+                if (d > 0) types.put(TypeOfRoom.DOUBLE, d);
+                if (t > 0) types.put(TypeOfRoom.TRIPLE, t);
                 if (types.isEmpty()) { showError("Add at least one room type."); return; }
 
-                // Walk-in uses a generated reservation ID
                 String resId = "WALKIN-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
 
                 Booking b = new Booking(
@@ -445,8 +427,9 @@ public class BookingsPanel extends JPanel {
         form.setBackground(Theme.SURFACE);
         form.setBorder(new EmptyBorder(16, 20, 10, 20));
 
-        String[] typeNames = b.getRoomTypes().keySet().stream()
-            .map(Booking.RoomType::name).toArray(String[]::new);
+        // FIX: use TypeOfRoom.name() directly
+        String[] typeNames = b.getTypeOfRooms().keySet().stream()
+            .map(TypeOfRoom::name).toArray(String[]::new);
         JComboBox<String> typeCb = Theme.comboBox(typeNames);
 
         JTextField roomNumF = Theme.textField();
@@ -463,18 +446,18 @@ public class BookingsPanel extends JPanel {
         form.add(Theme.label("Room Number:", Theme.FONT_BODY, Theme.TEXT_DIM), gc);
         gc.gridx=1; gc.weightx=1; form.add(roomNumF, gc);
 
-        // Current assignments display
         gc.gridx=0; gc.gridy=2; gc.gridwidth=2;
         JLabel assigned = Theme.label("Assigned: " + formatAssignments(b), Theme.FONT_SMALL, Theme.TEXT_DIM);
         form.add(assigned, gc);
 
-        JButton assignBtn  = Theme.primaryButton("Assign");
-        JButton removeBtn  = Theme.dangerButton("Remove");
-        JButton closeBtn   = Theme.ghostButton("Close");
+        JButton assignBtn = Theme.primaryButton("Assign");
+        JButton removeBtn = Theme.dangerButton("Remove");
+        JButton closeBtn  = Theme.ghostButton("Close");
 
         assignBtn.addActionListener(e -> {
             try {
-                Booking.RoomType type = Booking.RoomType.valueOf((String) typeCb.getSelectedItem());
+                // FIX: use TypeOfRoom.valueOf directly
+                TypeOfRoom type = TypeOfRoom.valueOf((String) typeCb.getSelectedItem());
                 int num = Integer.parseInt(roomNumF.getText().trim());
                 b.assignRoom(type, num);
                 assigned.setText("Assigned: " + formatAssignments(b));
@@ -489,7 +472,7 @@ public class BookingsPanel extends JPanel {
 
         removeBtn.addActionListener(e -> {
             try {
-                Booking.RoomType type = Booking.RoomType.valueOf((String) typeCb.getSelectedItem());
+                TypeOfRoom type = TypeOfRoom.valueOf((String) typeCb.getSelectedItem());
                 int num = Integer.parseInt(roomNumF.getText().trim());
                 b.removeAssignedRoom(type, num);
                 assigned.setText("Assigned: " + formatAssignments(b));
@@ -525,17 +508,18 @@ public class BookingsPanel extends JPanel {
         body.setLayout(new BoxLayout(body, BoxLayout.Y_AXIS));
         body.setBorder(new EmptyBorder(16, 24, 16, 24));
 
-        detailRow(body, "Booking ID",    b.getBookingId());
-        detailRow(body, "Reservation ID",b.getReservationId());
-        detailRow(body, "Guest Name",    b.getGuestName());
-        detailRow(body, "Phone",         b.getPhone());
-        detailRow(body, "Room Types",    formatRoomTypesBooking(b.getRoomTypes()));
-        detailRow(body, "Total Rooms",   String.valueOf(b.getTotalRooms()));
-        detailRow(body, "Check-In",      b.getCheckInDate().toString());
-        detailRow(body, "Check-Out",     b.getCheckOutDate().toString());
-        detailRow(body, "Nights",        String.valueOf(b.getNights()));
-        detailRow(body, "Status",        b.getBookingStatus().name());
-        detailRow(body, "Created",       b.getBookingCreationDate().toString());
+        detailRow(body, "Booking ID",       b.getBookingId());
+        detailRow(body, "Reservation ID",   b.getReservationId());
+        detailRow(body, "Guest Name",       b.getGuestName());
+        detailRow(body, "Phone",            b.getPhone());
+        // FIX: use getTypeOfRooms()
+        detailRow(body, "Room Types",       formatRoomTypesBooking(b.getTypeOfRooms()));
+        detailRow(body, "Total Rooms",      String.valueOf(b.getTotalRooms()));
+        detailRow(body, "Check-In",         b.getCheckInDate().toString());
+        detailRow(body, "Check-Out",        b.getCheckOutDate().toString());
+        detailRow(body, "Nights",           String.valueOf(b.getNights()));
+        detailRow(body, "Status",           b.getBookingStatus().name());
+        detailRow(body, "Created",          b.getBookingCreationDate().toString());
         detailRow(body, "Room Assignments", formatAssignments(b));
 
         JPanel btns = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
@@ -573,23 +557,26 @@ public class BookingsPanel extends JPanel {
     }
 
     // ── Format helpers ────────────────────────────────────────────────────────
-    private String formatRoomTypes(Map<Reservation.RoomType, Integer> map) {
+
+    // FIX: both Reservation and Booking use Map<TypeOfRoom, Integer>
+    private String formatRoomTypes(Map<TypeOfRoom, Integer> map) {
         return map.entrySet().stream()
-            .map(e -> e.getValue() + "×" + e.getKey().name())
+            .map(e -> e.getValue() + "×" + e.getKey().getDisplayName())
             .reduce((a, b) -> a + ", " + b).orElse("-");
     }
 
-    private String formatRoomTypesBooking(Map<Booking.RoomType, Integer> map) {
+    private String formatRoomTypesBooking(Map<TypeOfRoom, Integer> map) {
         return map.entrySet().stream()
-            .map(e -> e.getValue() + "×" + e.getKey().name())
+            .map(e -> e.getValue() + "×" + e.getKey().getDisplayName())
             .reduce((a, b) -> a + ", " + b).orElse("-");
     }
 
     private String formatAssignments(Booking b) {
-        Map<Booking.RoomType, List<Integer>> map = b.getActualRoomAssignments();
+        // FIX: getActualRoomAssignments() returns Map<TypeOfRoom, List<Integer>>
+        Map<TypeOfRoom, List<Integer>> map = b.getActualRoomAssignments();
         if (map.isEmpty()) return "None";
         return map.entrySet().stream()
-            .map(e -> e.getKey().name() + ": " + e.getValue())
+            .map(e -> e.getKey().getDisplayName() + ": " + e.getValue())
             .reduce((a, x) -> a + "  |  " + x).orElse("None");
     }
 
@@ -642,13 +629,8 @@ public class BookingsPanel extends JPanel {
     private void showError(String m)   { JOptionPane.showMessageDialog(this, m, "Error",   JOptionPane.ERROR_MESSAGE); }
     private void showSuccess(String m) { JOptionPane.showMessageDialog(this, m, "Success", JOptionPane.INFORMATION_MESSAGE); }
 
-    /** Allow DashboardFrame to access the booking list (e.g. for invoice creation). */
     public List<Booking> getBookings() { return Collections.unmodifiableList(bookings); }
 
-    /**
-     * Called by ReservationsPanel.bookNow() to push a booking created from
-     * a confirmed reservation directly into this panel's list.
-     */
     public void addBookingDirect(Booking booking) {
         bookings.add(booking);
         refreshTable();
