@@ -99,7 +99,7 @@ public class Hotel {
         if (type == null) throw new HotelException("Room type cannot be null.");
         List<Room> result = new ArrayList<>();
         for (Room r : rooms)
-            if (r.getRoomType() == type) result.add(r);
+            if (r.getTypeOfRoom() == type) result.add(r);
         return result;
     }
 

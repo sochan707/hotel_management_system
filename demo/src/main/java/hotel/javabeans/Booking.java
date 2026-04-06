@@ -38,7 +38,7 @@ public class Booking {
 
     protected final String guestName;
     protected String phone;
-    protected Map<TypeOfRoom, Integer> roomTypes = new EnumMap<>(TypeOfRoom.class); // how many room for each type
+    protected Map<TypeOfRoom, Integer> TypeOfRooms = new EnumMap<>(TypeOfRoom.class); // how many room for each type
     protected LocalDate checkInDate;
     protected LocalDate checkOutDate;
 
@@ -52,13 +52,13 @@ public class Booking {
     // -------------------------------------------------------------------------
 
     public Booking(String reservationId, String guestName, String phone,
-                   Map<TypeOfRoom, Integer> roomTypes,
+                   Map<TypeOfRoom, Integer> TypeOfRooms,
                    LocalDate checkInDate, LocalDate checkOutDate, String specialRequests) {
         this.bookingId     = UUID.randomUUID().toString();
         this.reservationId = validateString(reservationId, "Reservation ID");
         this.guestName = validateString(guestName, "Guest name"); // use this so I can set guestName to final
         setPhone(phone);
-        setTypeOfRooms(roomTypes);
+        setTypeOfRooms(TypeOfRooms);
         setCheckInDate(checkInDate);
         setCheckOutDate(checkOutDate);
         this.bookingCreationDate = LocalDate.now();
@@ -135,11 +135,11 @@ public class Booking {
         // [\\s-]: 123-456-789 -> 123456789
     }
 
-    public void setTypeOfRooms(Map<TypeOfRoom, Integer> roomTypes) {
-        if (roomTypes == null || roomTypes.isEmpty()) {
+    public void setTypeOfRooms(Map<TypeOfRoom, Integer> TypeOfRooms) {
+        if (TypeOfRooms == null || TypeOfRooms.isEmpty()) {
             throw new IllegalArgumentException("Room types cannot be null or empty.");
         }
-        for (Map.Entry<TypeOfRoom, Integer> entry : roomTypes.entrySet()) {
+        for (Map.Entry<TypeOfRoom, Integer> entry : TypeOfRooms.entrySet()) {
             if (entry.getKey() == null) {
                 throw new IllegalArgumentException("Room type key cannot be null.");
             }
@@ -148,28 +148,28 @@ public class Booking {
                     "Quantity for room type " + entry.getKey() + " must be positive.");
             }
         }
-        this.roomTypes = new EnumMap<>(roomTypes);
+        this.TypeOfRooms = new EnumMap<>(TypeOfRooms);
     }
 
-    public void addTypeOfRoom(TypeOfRoom roomType, int quantity) {
-        if (roomType == null) {
+    public void addTypeOfRoom(TypeOfRoom TypeOfRoom, int quantity) {
+        if (TypeOfRoom == null) {
             throw new IllegalArgumentException("Room type cannot be null.");
         }
         if (quantity <= 0) {
             throw new IllegalArgumentException("Quantity must be positive.");
         }
-        this.roomTypes.put(roomType, this.roomTypes.getOrDefault(roomType, 0) + quantity);
+        this.TypeOfRooms.put(TypeOfRoom, this.TypeOfRooms.getOrDefault(TypeOfRoom, 0) + quantity);
     }
 
-    public void removeTypeOfRoom(TypeOfRoom roomType) {
-        if (roomType == null) {
+    public void removeTypeOfRoom(TypeOfRoom TypeOfRoom) {
+        if (TypeOfRoom == null) {
             throw new IllegalArgumentException("Room type cannot be null.");
         }
-        if (!this.roomTypes.containsKey(roomType)) {
-            throw new IllegalArgumentException("Room type " + roomType + " is not in this booking.");
+        if (!this.TypeOfRooms.containsKey(TypeOfRoom)) {
+            throw new IllegalArgumentException("Room type " + TypeOfRoom + " is not in this booking.");
         }
-        this.roomTypes.remove(roomType);
-        if (this.roomTypes.isEmpty()) {
+        this.TypeOfRooms.remove(TypeOfRoom);
+        if (this.TypeOfRooms.isEmpty()) {
             throw new IllegalStateException("Booking must have at least one room type.");
         }
     }
@@ -208,7 +208,7 @@ public class Booking {
     public String getReservationId()             { return reservationId; }
     public String getGuestName()                 { return guestName; }
     public String getPhone()                     { return phone; }
-    public Map<TypeOfRoom, Integer> getTypeOfRooms() { return new EnumMap<>(roomTypes); }
+    public Map<TypeOfRoom, Integer> getTypeOfRooms() { return new EnumMap<>(TypeOfRooms); }
     public LocalDate getCheckInDate()            { return checkInDate; }
     public LocalDate getCheckOutDate()           { return checkOutDate; }
     public BookingStatus getBookingStatus()      {return bookingStatus;}
@@ -234,7 +234,7 @@ public class Booking {
     }
 
     public int getTotalRooms() {
-        return roomTypes.values().stream().mapToInt(Integer::intValue).sum();
+        return TypeOfRooms.values().stream().mapToInt(Integer::intValue).sum();
     }
 
     public void assignRoom(TypeOfRoom type, int roomNumber) {
@@ -307,7 +307,7 @@ public class Booking {
             "Guest Name        : " + guestName + "\n" +
             "Phone             : " + phone + "\n" +
             "---------------------------------------------------\n" +
-            "Room Types        : " + roomTypes + "\n" +
+            "Room Types        : " + TypeOfRooms + "\n" +
             "Total Rooms       : " + getTotalRooms() + "\n" +
             "Check-In Date     : " + checkInDate + "\n" +
             "Check-Out Date    : " + checkOutDate + "\n" +

@@ -11,9 +11,9 @@ public class App
 {
     public static void main( String[] args )
     {
-        Map<TypeOfRoom, Integer> roomTypes = new EnumMap<>(TypeOfRoom.class);
-        roomTypes.put(TypeOfRoom.SINGLE, 1);
-        roomTypes.put(TypeOfRoom.DOUBLE, 2);
+        Map<TypeOfRoom, Integer> TypeOfRooms = new EnumMap<>(TypeOfRoom.class);
+        TypeOfRooms.put(TypeOfRoom.SINGLE, 1);
+        TypeOfRooms.put(TypeOfRoom.DOUBLE, 2);
 
         Map<TypeOfRoom, Double> roomRates = new EnumMap<>(TypeOfRoom.class);
         roomRates.put(TypeOfRoom.SINGLE, 50.0);
@@ -21,7 +21,7 @@ public class App
 
         Invoice invoice = new Invoice(
             "BK001",        // bookingId
-            roomTypes,
+            TypeOfRooms,
             roomRates,
             3,              // numberOfNights
             5,              // numberOfGuests

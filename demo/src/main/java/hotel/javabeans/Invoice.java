@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import hotel.javabeans.payment.Payment;
-import hotel.javabeans.TypeOfRoom;
 
 public class Invoice {
 
@@ -19,7 +18,7 @@ public class Invoice {
     private final String bookingId;
 
     // how many rooms for each type
-    private Map<TypeOfRoom, Integer> roomTypes = new EnumMap<>(TypeOfRoom.class);
+    private Map<TypeOfRoom, Integer> TypeOfRooms = new EnumMap<>(TypeOfRoom.class);
 
     // price per night for each type
     private Map<TypeOfRoom, Double> roomRatePerNight = new EnumMap<>(TypeOfRoom.class);
@@ -40,7 +39,7 @@ public class Invoice {
 
     // ========================================================== CONSTRUCTOR ===================================================
     public Invoice(String bookingId,
-                   Map<TypeOfRoom, Integer> roomTypes,
+                   Map<TypeOfRoom, Integer> TypeOfRooms,
                    Map<TypeOfRoom, Double> roomRatePerNight,
                    int numberOfNights,
                    int numberOfGuests,
@@ -52,7 +51,7 @@ public class Invoice {
         this.bookingId = validateRequiredString(bookingId, "Booking ID");
         this.issueDate = LocalDate.now();
 
-        setTypeOfRooms(roomTypes);
+        setTypeOfRooms(TypeOfRooms);
         setRoomRatePerNight(roomRatePerNight);
         setNumberOfNights(numberOfNights);
         setNumberOfGuests(numberOfGuests);
@@ -100,14 +99,14 @@ public class Invoice {
     }
 
     // ========================================================== SETTERS =======================================================
-    public void setTypeOfRooms(Map<TypeOfRoom, Integer> roomTypes) {
-        if (roomTypes == null || roomTypes.isEmpty()) {
+    public void setTypeOfRooms(Map<TypeOfRoom, Integer> TypeOfRooms) {
+        if (TypeOfRooms == null || TypeOfRooms.isEmpty()) {
             throw new IllegalArgumentException("Room types cannot be null or empty.");
         }
 
         Map<TypeOfRoom, Integer> copy = new EnumMap<>(TypeOfRoom.class);
 
-        for (Map.Entry<TypeOfRoom, Integer> entry : roomTypes.entrySet()) {
+        for (Map.Entry<TypeOfRoom, Integer> entry : TypeOfRooms.entrySet()) {
             TypeOfRoom type = entry.getKey();
             Integer quantity = entry.getValue();
 
@@ -121,7 +120,7 @@ public class Invoice {
             copy.put(type, quantity);
         }
 
-        this.roomTypes = copy;
+        this.TypeOfRooms = copy;
         recalculateInvoice();
     }
 
@@ -146,7 +145,7 @@ public class Invoice {
             copy.put(type, rate);
         }
 
-        for (TypeOfRoom type : this.roomTypes.keySet()) {
+        for (TypeOfRoom type : this.TypeOfRooms.keySet()) {
             if (!copy.containsKey(type)) {
                 throw new IllegalArgumentException("Missing room rate for " + type + ".");
             }
@@ -177,8 +176,8 @@ public class Invoice {
     }
 
     // ========================================================== BUSINESS LOGIC ================================================
-    private int getIncludedGuests(TypeOfRoom roomType) {
-        switch (roomType) {
+    private int getIncludedGuests(TypeOfRoom TypeOfRoom) {
+        switch (TypeOfRoom) {
             case SINGLE: return 1;
             case DOUBLE: return 2;
             case TRIPLE: return 3;
@@ -189,7 +188,7 @@ public class Invoice {
     private int getTotalIncludedGuests() {
         int total = 0;
 
-        for (Map.Entry<TypeOfRoom, Integer> entry : roomTypes.entrySet()) {
+        for (Map.Entry<TypeOfRoom, Integer> entry : TypeOfRooms.entrySet()) {
             total += getIncludedGuests(entry.getKey()) * entry.getValue();
         }
 
@@ -199,7 +198,7 @@ public class Invoice {
     private void calculateRoomCharges() {
         double total = 0.0;
 
-        for (Map.Entry<TypeOfRoom, Integer> entry : roomTypes.entrySet()) {
+        for (Map.Entry<TypeOfRoom, Integer> entry : TypeOfRooms.entrySet()) {
             TypeOfRoom type = entry.getKey();
             int quantity = entry.getValue();
             double rate = roomRatePerNight.get(type);
@@ -222,14 +221,14 @@ public class Invoice {
     }
 
     public void recalculateInvoice() {
-        if (roomTypes == null || roomTypes.isEmpty()
+        if (TypeOfRooms == null || TypeOfRooms.isEmpty()
                 || roomRatePerNight == null || roomRatePerNight.isEmpty()
                 || numberOfNights <= 0
                 || numberOfGuests <= 0) {
             return;
         }
 
-        for (TypeOfRoom type : roomTypes.keySet()) {
+        for (TypeOfRoom type : TypeOfRooms.keySet()) {
             if (!roomRatePerNight.containsKey(type)) {
                 throw new IllegalStateException("Missing room rate for " + type + ".");
             }
@@ -252,7 +251,7 @@ public class Invoice {
 
     public int getTotalRooms() {
         int total = 0;
-        for (int quantity : roomTypes.values()) {
+        for (int quantity : TypeOfRooms.values()) {
             total += quantity;
         }
         return total;
@@ -289,7 +288,7 @@ public class Invoice {
     }
 
     public Map<TypeOfRoom, Integer> getTypeOfRooms() {
-        return new EnumMap<>(roomTypes);
+        return new EnumMap<>(TypeOfRooms);
     }
 
     public Map<TypeOfRoom, Double> getRoomRatePerNight() {
@@ -352,7 +351,7 @@ public class Invoice {
         sb.append("--------------------------------------------------\n");
 
         sb.append("ROOM DETAILS:\n");
-        for (Map.Entry<TypeOfRoom, Integer> entry : roomTypes.entrySet()) {
+        for (Map.Entry<TypeOfRoom, Integer> entry : TypeOfRooms.entrySet()) {
             TypeOfRoom type = entry.getKey();
             int qty = entry.getValue();
             double rate = roomRatePerNight.get(type);

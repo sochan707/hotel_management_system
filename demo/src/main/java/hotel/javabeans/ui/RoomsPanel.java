@@ -132,7 +132,7 @@ public class RoomsPanel extends JPanel {
         for (Room room : hotel.getRooms()) {
             tableModel.addRow(new Object[]{
                 room.getRoomNumber(),
-                room.getRoomType().getDisplayName(),
+                room.getTypeOfRoom().getDisplayName(),
                 String.format("$%.2f", room.getPrice()),
                 room.getStatus()
             });
@@ -193,7 +193,7 @@ public class RoomsPanel extends JPanel {
         JDialog dlg = styledDialog("Edit Room — " + roomNumber, 400, 260);
 
         JComboBox<String> typeCb = Theme.comboBox("SINGLE", "DOUBLE", "TRIPLE");
-        typeCb.setSelectedItem(room.getRoomType().name());
+        typeCb.setSelectedItem(room.getTypeOfRoom().name());
         JTextField priceField = Theme.textField();
         priceField.setText(String.valueOf(room.getPrice()));
 
@@ -207,7 +207,7 @@ public class RoomsPanel extends JPanel {
 
         saveBtn.addActionListener(e -> {
             try {
-                room.setRoomType(TypeOfRoom.valueOf((String) typeCb.getSelectedItem()));
+                room.setTypeOfRoom(TypeOfRoom.valueOf((String) typeCb.getSelectedItem()));
                 room.setPrice(Double.parseDouble(priceField.getText().trim()));
                 refreshTable();
                 dlg.dispose();
