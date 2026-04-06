@@ -5,25 +5,8 @@ import java.util.EnumMap;
 import java.util.Map;
 import java.util.UUID;
 
+import hotel.javabeans.TypeOfRoom;
 public class Reservation {
-    public enum RoomType {
-        SINGLE,
-        DOUBLE,
-        TRIPLE;
-
-        public static RoomType from(String value) { // from() method converts a String input into a valid RoomType enum constant.
-            if (value == null || value.trim().isEmpty()) {
-                throw new IllegalArgumentException("Room type cannot be null or empty.");
-            }
-            switch (value.trim().toUpperCase()) {
-                case "SINGLE": return SINGLE;
-                case "DOUBLE": return DOUBLE;
-                case "TRIPLE": return TRIPLE;
-                default:
-                    throw new IllegalArgumentException("Invalid room type: " + value);
-            }
-        }
-    }
 
     // -------------------------------------------------------------------------
     // Constants
@@ -38,7 +21,7 @@ public class Reservation {
     private final String reservationId;
     private final String guestName;
     private String phone;
-    private Map<RoomType, Integer> roomTypes = new EnumMap<>(RoomType.class);
+    private Map<TypeOfRoom, Integer> roomTypes = new EnumMap<>(TypeOfRoom.class);
     private LocalDate checkInDate;
     private LocalDate checkOutDate;
     private double estimatedPrice;
@@ -53,13 +36,13 @@ public class Reservation {
     // -------------------------------------------------------------------------
 
     public Reservation(String guestName, String phone,
-                       Map<RoomType, Integer> roomTypes,
+                       Map<TypeOfRoom, Integer> roomTypes,
                        LocalDate checkInDate, LocalDate checkOutDate,
                        double estimatedPrice) {
         this.reservationId = UUID.randomUUID().toString();
         this.guestName = validateGuestName(guestName);
         setPhone(phone);
-        setRoomTypes(roomTypes);
+        setTypeOfRooms(roomTypes);
         setCheckInDate(checkInDate);
         setCheckOutDate(checkOutDate);
         setEstimatedPrice(estimatedPrice);
@@ -96,11 +79,11 @@ public class Reservation {
     }
 
     // set 1 roomType or more yor marn room
-    public void setRoomTypes(Map<RoomType, Integer> roomTypes) {
+    public void setTypeOfRooms(Map<TypeOfRoom, Integer> roomTypes) {
         if (roomTypes == null || roomTypes.isEmpty()) {
             throw new IllegalArgumentException("Room types cannot be null or empty.");
         }
-        for (Map.Entry<RoomType, Integer> entry : roomTypes.entrySet()) {
+        for (Map.Entry<TypeOfRoom, Integer> entry : roomTypes.entrySet()) {
             if (entry.getKey() == null) {
                 throw new IllegalArgumentException("Room type key cannot be null.");
             }
@@ -112,7 +95,7 @@ public class Reservation {
         this.roomTypes = new EnumMap<>(roomTypes);
     }
 
-    public void addRoomType(RoomType roomType, int quantity) {
+    public void addTypeOfRoom(TypeOfRoom roomType, int quantity) {
         if (roomType == null) {
             throw new IllegalArgumentException("Room type cannot be null.");
         }
@@ -122,7 +105,7 @@ public class Reservation {
         this.roomTypes.put(roomType, this.roomTypes.getOrDefault(roomType, 0) + quantity);
     }
 
-    public void removeRoomType(RoomType roomType) {
+    public void removeTypeOfRoom(TypeOfRoom roomType) {
         if (roomType == null) {
             throw new IllegalArgumentException("Room type cannot be null.");
         }
@@ -200,7 +183,7 @@ public class Reservation {
     public String getReservationId()             { return reservationId; }
     public String getGuestName()                 { return guestName; }
     public String getPhone()                     { return phone; }
-    public Map<RoomType, Integer> getRoomTypes() { return new EnumMap<>(roomTypes); }
+    public Map<TypeOfRoom, Integer> getTypeOfRooms() { return new EnumMap<>(roomTypes); }
     public LocalDate getCheckInDate()            { return checkInDate; }
     public LocalDate getCheckOutDate()           { return checkOutDate; }
     public double getEstimatedPrice()            { return estimatedPrice; }

@@ -34,6 +34,7 @@ import javax.swing.table.TableCellRenderer;
 
 import hotel.javabeans.Hotel;
 import hotel.javabeans.Reservation;
+import hotel.javabeans.TypeOfRoom;
 
 public class ReservationsPanel extends JPanel {
 
@@ -169,13 +170,13 @@ public class ReservationsPanel extends JPanel {
                 LocalDate checkOut = LocalDate.parse(checkOutFld.getText().trim());
                 double price = Double.parseDouble(priceFld.getText().trim());
 
-                Map<Reservation.RoomType, Integer> types = new EnumMap<>(Reservation.RoomType.class);
+                Map<TypeOfRoom, Integer> types = new EnumMap<>(TypeOfRoom.class);
                 int s = Integer.parseInt(singleQty.getText().trim());
                 int d = Integer.parseInt(doubleQty.getText().trim());
                 int t = Integer.parseInt(tripleQty.getText().trim());
-                if (s > 0) types.put(Reservation.RoomType.SINGLE, s);
-                if (d > 0) types.put(Reservation.RoomType.DOUBLE, d);
-                if (t > 0) types.put(Reservation.RoomType.TRIPLE, t);
+                if (s > 0) types.put(TypeOfRoom.SINGLE, s);
+                if (d > 0) types.put(TypeOfRoom.DOUBLE, d);
+                if (t > 0) types.put(TypeOfRoom.TRIPLE, t);
                 if (types.isEmpty()) { showError("Add at least one room type."); return; }
 
                 Reservation res = new Reservation(

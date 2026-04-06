@@ -11,13 +11,13 @@ public class App
 {
     public static void main( String[] args )
     {
-        Map<Invoice.RoomType, Integer> roomTypes = new EnumMap<>(Invoice.RoomType.class);
-        roomTypes.put(Invoice.RoomType.SINGLE, 1);
-        roomTypes.put(Invoice.RoomType.DOUBLE, 2);
+        Map<TypeOfRoom, Integer> roomTypes = new EnumMap<>(TypeOfRoom.class);
+        roomTypes.put(TypeOfRoom.SINGLE, 1);
+        roomTypes.put(TypeOfRoom.DOUBLE, 2);
 
-        Map<Invoice.RoomType, Double> roomRates = new EnumMap<>(Invoice.RoomType.class);
-        roomRates.put(Invoice.RoomType.SINGLE, 50.0);
-        roomRates.put(Invoice.RoomType.DOUBLE, 80.0);
+        Map<TypeOfRoom, Double> roomRates = new EnumMap<>(TypeOfRoom.class);
+        roomRates.put(TypeOfRoom.SINGLE, 50.0);
+        roomRates.put(TypeOfRoom.DOUBLE, 80.0);
 
         Invoice invoice = new Invoice(
             "BK001",        // bookingId
