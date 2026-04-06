@@ -7,13 +7,13 @@ public class Room {
     public static final String OCCUPIED = "Occupied";
     
     private String roomNumber;
-    private TypeOfRoom TypeOfRoom;
+    private TypeOfRoom typeOfRoom;
     private double price;
     private String status;
     
-    public Room(String roomNumber, TypeOfRoom TypeOfRoom, double price) {
+    public Room(String roomNumber, TypeOfRoom typeOfRoom, double price) {
         setRoomNumber(roomNumber);
-        setTypeOfRoom(TypeOfRoom);
+        setTypeOfRoom(typeOfRoom);
         setPrice(price);
         this.status = AVAILABLE; // Default status
     
@@ -23,7 +23,7 @@ public String getRoomNumber() {
     }
     
     public TypeOfRoom getTypeOfRoom() {
-        return TypeOfRoom;
+        return typeOfRoom;
     }
     
     public double getPrice() {
@@ -41,11 +41,11 @@ public String getRoomNumber() {
     
     this.roomNumber = roomNumber.trim();
 }
- public void setTypeOfRoom(TypeOfRoom TypeOfRoom) {
-        if (TypeOfRoom == null) {
+ public void setTypeOfRoom(TypeOfRoom typeOfRoom) {
+        if (typeOfRoom == null) {
             throw new IllegalArgumentException("Room type cannot be null.");
         }
-        this.TypeOfRoom = TypeOfRoom;
+        this.typeOfRoom = typeOfRoom;
     }
     
     public void setPrice(double price) {
@@ -84,7 +84,7 @@ public String getRoomNumber() {
     public String toString() {
         return "Room{" +
                 "roomNumber='" + roomNumber + '\'' +
-                ", TypeOfRoom=" + (TypeOfRoom != null ? TypeOfRoom.getDisplayName() : "N/A") +
+                ", typeOfRoom=" + (typeOfRoom != null ? typeOfRoom.getDisplayName() : "N/A")+
                 ", price=" + price +
                 ", status='" + status + '\'' +
                 '}';
