@@ -12,7 +12,7 @@ public class Receptionist extends Staff {
         String act = action.toLowerCase().trim();
         return switch (act) {
             case "checkin", "checkout", "bookroom", "cancelbooking",
-                 "viewbooking", "viewguest", "viewroom" -> true;
+                 "viewbooking", "viewguest", "viewroom" , "generatebill", "processpayment"-> true;
             default -> false;
         };
     }
