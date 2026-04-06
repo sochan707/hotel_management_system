@@ -26,6 +26,20 @@ import javax.swing.table.JTableHeader;
 
 public final class Theme {
 
+    public static JLabel sectionTitle(String text) {
+        JLabel l = new JLabel(text);
+        l.setFont(FONT_TITLE);
+        l.setForeground(TEXT);
+        return l;
+    }
+
+    public static JLabel sectionSub(String text) {
+        JLabel l = new JLabel(text);
+        l.setFont(FONT_BODY);
+        l.setForeground(TEXT_DIM);
+        return l;
+    }
+
     private Theme() {}
 
     // ── Palette — Light / White theme ─────────────────────────────────────────

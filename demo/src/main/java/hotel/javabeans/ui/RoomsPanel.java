@@ -37,13 +37,15 @@ import hotel.javabeans.TypeOfRoom;
 public class RoomsPanel extends JPanel {
 
     private final Hotel hotel;
+    private final boolean isManager;
     private DefaultTableModel tableModel;
     private JTable table;
 
     private static final String[] COLUMNS = {"Room No.", "Type", "Price/Night", "Status"};
 
-    public RoomsPanel(Hotel hotel) {
-        this.hotel = hotel;
+    public RoomsPanel(Hotel hotel, String role) {
+        this.hotel     = hotel;
+        this.isManager = "Manager".equalsIgnoreCase(role);
         setBackground(Theme.BG);
         setLayout(new BorderLayout(0, 0));
         add(buildHeader(),  BorderLayout.NORTH);
@@ -119,10 +121,13 @@ public class RoomsPanel extends JPanel {
         removeBtn.addActionListener(e -> removeSelected());
         statusBtn.addActionListener(e -> changeStatus());
 
-        bar.add(addBtn);
-        bar.add(editBtn);
-        bar.add(removeBtn);
+        // Change Status is available to all roles (Receptionist needs this for check-in workflow)
         bar.add(statusBtn);
+        if (isManager) {
+            bar.add(addBtn);
+            bar.add(editBtn);
+            bar.add(removeBtn);
+        }
         return bar;
     }
 
