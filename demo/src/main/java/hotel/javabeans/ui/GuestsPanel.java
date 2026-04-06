@@ -1,4 +1,5 @@
 package hotel.javabeans.ui;
+
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Frame;
@@ -29,13 +30,15 @@ import hotel.javabeans.Person.Guest;
 public class GuestsPanel extends JPanel {
 
     private final Hotel hotel;
+    private final boolean isManager;
     private DefaultTableModel tableModel;
     private JTable table;
 
     private static final String[] COLUMNS = {"ID", "First Name", "Last Name", "Gender", "Phone"};
 
-    public GuestsPanel(Hotel hotel) {
-        this.hotel = hotel;
+    public GuestsPanel(Hotel hotel, String role) {
+        this.hotel     = hotel;
+        this.isManager = "Manager".equalsIgnoreCase(role) || "Receptionist".equalsIgnoreCase(role);
         setBackground(Theme.BG);
         setLayout(new BorderLayout());
         add(buildHeader(),  BorderLayout.NORTH);
@@ -84,7 +87,13 @@ public class GuestsPanel extends JPanel {
         removeBtn.addActionListener(e -> removeSelected());
         viewBtn.addActionListener(e -> viewSelected());
 
-        bar.add(addBtn); bar.add(editBtn); bar.add(removeBtn); bar.add(viewBtn);
+        // View is available to all roles
+        bar.add(viewBtn);
+        if (isManager) {
+            bar.add(addBtn);
+            bar.add(editBtn);
+            bar.add(removeBtn);
+        }
         return bar;
     }
 
@@ -164,7 +173,6 @@ public class GuestsPanel extends JPanel {
 
         save.addActionListener(e -> {
             try {
-                // Re-create (setters are protected — create new and replace)
                 hotel.removeGuest(guest);
                 Guest updated = new Guest(id,
                     fnField.getText().trim(), lnField.getText().trim(),

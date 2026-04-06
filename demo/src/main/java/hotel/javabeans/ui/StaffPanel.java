@@ -35,13 +35,15 @@ import hotel.javabeans.Person.Staff;
 public class StaffPanel extends JPanel {
 
     private final Hotel hotel;
+    private final boolean isManager;
     private DefaultTableModel tableModel;
     private JTable table;
 
     private static final String[] COLUMNS = {"ID", "First Name", "Last Name", "Gender", "Phone", "Position", "Active"};
 
-    public StaffPanel(Hotel hotel) {
-        this.hotel = hotel;
+    public StaffPanel(Hotel hotel, String role) {
+        this.hotel     = hotel;
+        this.isManager = "Manager".equalsIgnoreCase(role);
         setBackground(Theme.BG);
         setLayout(new BorderLayout());
         add(buildHeader(),  BorderLayout.NORTH);
@@ -99,7 +101,11 @@ public class StaffPanel extends JPanel {
         removeBtn.addActionListener(e -> removeSelected());
         viewBtn.addActionListener(e -> viewSelected());
 
-        bar.add(addBtn); bar.add(removeBtn); bar.add(viewBtn);
+        bar.add(viewBtn);
+        if (isManager) {
+            bar.add(addBtn);
+            bar.add(removeBtn);
+        }
         return bar;
     }
 
