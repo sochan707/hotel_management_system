@@ -1,6 +1,6 @@
 package hotel.javabeans.Person;
 
-public abstract class Staff extends Person implements IStaff {
+public abstract class Staff extends Person {
 
     private String position;
     private boolean active = true;
@@ -24,23 +24,6 @@ public abstract class Staff extends Person implements IStaff {
 
     public void setActive(boolean active) { this.active = active; }
 
-    @Override public String  getPosition() { return position; }
-    @Override public boolean isActive()    { return active; }
-
-    @Override
-    public boolean can(String action) {
-        if (position == null || action == null) return false;
-        String act = action.toLowerCase().trim();
-        if (position.equals("Manager")) return true;
-        if (position.equals("Receptionist")) {
-            return switch (act) {
-                case "checkin", "checkout", "bookroom", "cancelbooking",
-                     "viewbooking", "viewguest", "viewroom" -> true;
-                default -> false;
-            };
-        }
-        return false;
-    }
 
     @Override
     public String toString() {

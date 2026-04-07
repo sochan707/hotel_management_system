@@ -1,7 +1,10 @@
 package hotel.javabeans;
 
+
 public class Room {
-   
+
+    
+
     public static final String AVAILABLE = "Available";
     public static final String BOOKED = "Booked";
     public static final String OCCUPIED = "Occupied";
