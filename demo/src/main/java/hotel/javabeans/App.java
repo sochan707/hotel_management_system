@@ -9,6 +9,8 @@ import hotel.javabeans.payment.Payment;
 
 public class App 
 {
+    
+
     public static void main( String[] args )
     {
         Map<TypeOfRoom, Integer> TypeOfRooms = new EnumMap<>(TypeOfRoom.class);
@@ -42,8 +44,8 @@ public class App
 
         invoice.payInvoice(payment);
         System.out.println(invoice);
-        System.out.println("Total: $" + invoice.getTotalAmount());
-        System.out.println("Paid? " + invoice.isPaid());
+        // System.out.println("Total: $" + invoice.getTotalAmount());
+        // System.out.println("Paid? " + invoice.isPaid());
     }
 
     

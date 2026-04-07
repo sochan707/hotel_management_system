@@ -9,13 +9,16 @@ public class Room {
     public static final String BOOKED = "Booked";
     public static final String OCCUPIED = "Occupied";
     
-    private String roomNumber;
+    private final String roomNumber;
     private TypeOfRoom typeOfRoom;
     private double price;
     private String status;
     
     public Room(String roomNumber, TypeOfRoom typeOfRoom, double price) {
-        setRoomNumber(roomNumber);
+        if (roomNumber == null || roomNumber.trim().isEmpty()) {
+        throw new IllegalArgumentException("Room number cannot be null or empty.");
+    }
+    this.roomNumber = roomNumber.trim();
         setTypeOfRoom(typeOfRoom);
         setPrice(price);
         this.status = AVAILABLE; // Default status
@@ -36,14 +39,6 @@ public String getRoomNumber() {
     public String getStatus() {
         return status;
     }
-
-    public void setRoomNumber(String roomNumber) {
-    if (roomNumber == null || roomNumber.trim().isEmpty()) {
-        throw new IllegalArgumentException("Room number cannot be null or empty.");
-    }
-    
-    this.roomNumber = roomNumber.trim();
-}
  public void setTypeOfRoom(TypeOfRoom typeOfRoom) {
         if (typeOfRoom == null) {
             throw new IllegalArgumentException("Room type cannot be null.");

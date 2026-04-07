@@ -1,6 +1,6 @@
 package hotel.javabeans.Person;
 
-public class Manager extends Staff implements IStaff {
+public class Manager extends Staff  {
 
     public Manager(String id, String firstName, String lastName, String gender, String phone) {
         super(id, firstName, lastName, gender, phone, "Manager");
@@ -12,15 +12,7 @@ public class Manager extends Staff implements IStaff {
         return true;
     }
 
-    @Override
-    public String getPosition() {
-        return "Manager";
-    }
-
-    @Override
-    public boolean isActive() {
-        return true;
-    }
+   
 
     @Override
     public String toString() {
