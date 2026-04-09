@@ -1,105 +1,96 @@
 package hotel.javabeans;
 
-public class Login {
-    public static final String ROLE_STAFF = "Staff";
-    public static final String ROLE_GUEST = "Guest";
-    
-    private String username;
-    private String password;
-    private String role;
-    private boolean isLoggedIn;
-    
-    public Login(String username, String password, String role) {
+/**
+ * Abstract base class for authenticated users.
+ * Subclasses define role-specific behaviour (Staff, Guest, etc.).
+ */
+public abstract class Login {
+
+    // ── Custom exception ──────────────────────────────────────────────────────
+    public static class LoginException extends RuntimeException {
+        public LoginException(String message) { super(message); }
+    }
+
+    // ── Fields ────────────────────────────────────────────────────────────────
+    private String  username;
+    private String  password;
+    private boolean loggedIn;
+    private int     failedAttempts;
+    private static final int MAX_ATTEMPTS = 5;
+
+    // ── Constructor ───────────────────────────────────────────────────────────
+    public Login(String username, String password) {
         setUsername(username);
         setPassword(password);
-        setRole(role);
-        this.isLoggedIn = false;
+        this.loggedIn      = false;
+        this.failedAttempts = 0;
     }
-    
-    // Getters
-    public String getUsername() {
-        return username;
-    }
-    
-    // REMOVED: getPassword() method for security reasons
-    // Passwords should never be retrievable
-    
-    public String getRole() {
-        return role;
-    }
-    
-    public boolean isLoggedIn() {
-        return isLoggedIn;
-    }
-    
-    // Setters 
-    public void setUsername(String username) {
-        if(username != null && !username.isEmpty()) {
-            if(username.length() >= 3) {
-                this.username = username;
-            } else {
-                throw new IllegalArgumentException("Username must be at least 3 characters long.");
-            }
-        } else {
-            throw new IllegalArgumentException("Username cannot be null or empty.");
-        }
-    }
-    
-    public void setPassword(String password) {
-        if(password != null && !password.isEmpty()) {
-            if(password.length() >= 6) {
-                this.password = password;
-            } else {
-                throw new IllegalArgumentException("Password must be at least 6 characters long.");
-            }
-        } else {
-            throw new IllegalArgumentException("Password cannot be null or empty.");
-        }
-    }
-    
-    public void setRole(String role) {
-        if(role != null && !role.isEmpty()) {
-            if(role.equals(ROLE_STAFF) || role.equals(ROLE_GUEST)) {
-                this.role = role;
-            } else {
-                throw new IllegalArgumentException("Role must be 'Staff' or 'Guest'.");
-            }
-        } else {
-            throw new IllegalArgumentException("Role cannot be null or empty.");
-        }
-    }
-    
-    // Authentication 
+
+    // ── Abstract role API ─────────────────────────────────────────────────────
+    public abstract String  getRole();
+    public abstract boolean hasAccess();
+    public abstract String  getRolePermissions();
+
+    // ── Core auth ─────────────────────────────────────────────────────────────
+
+    /**
+     * Tries to authenticate with the supplied credentials.
+     *
+     * @throws LoginException if the account is locked due to too many failures
+     */
     public boolean authenticate(String username, String password) {
-        if(this.username.equals(username) && this.password.equals(password)) {
-            this.isLoggedIn = true;
+        if (failedAttempts >= MAX_ATTEMPTS) {
+            throw new LoginException(
+                "Account locked after " + MAX_ATTEMPTS + " failed attempts. Contact an administrator.");
+        }
+        if (username == null || password == null) {
+            failedAttempts++;
+            return false;
+        }
+        if (this.username.equals(username.trim()) && this.password.equals(password)) {
+            this.loggedIn      = true;
+            this.failedAttempts = 0;
             return true;
         }
+        failedAttempts++;
         return false;
     }
-    
+
+    /**
+     * Logs the current user out.
+     *
+     * @throws LoginException if no user is logged in
+     */
     public void logout() {
-        this.isLoggedIn = false;
+        if (!loggedIn) throw new LoginException("No user is currently logged in.");
+        this.loggedIn = false;
     }
-    
-    public boolean hasStaffAccess() {
-        return isLoggedIn && role.equals(ROLE_STAFF);
+
+    // ── Getters ───────────────────────────────────────────────────────────────
+    public boolean isLoggedIn()       { return loggedIn; }
+    public String  getUsername()      { return username; }
+    public int     getFailedAttempts(){ return failedAttempts; }
+    public boolean isLocked()         { return failedAttempts >= MAX_ATTEMPTS; }
+
+    // ── Setters with validation ───────────────────────────────────────────────
+    public void setUsername(String username) {
+        if (username == null || username.trim().length() < 3)
+            throw new LoginException("Username must be at least 3 characters long.");
+        this.username = username.trim();
     }
-    
-    public boolean hasGuestAccess() {
-        return isLoggedIn && role.equals(ROLE_GUEST);
+
+    public void setPassword(String password) {
+        if (password == null || password.length() < 6)
+            throw new LoginException("Password must be at least 6 characters long.");
+        this.password = password;
     }
-    
-    public String getRolePermissions() {
-        if(!isLoggedIn) {
-            return "Not logged in";
-        }
-        
-        if(role.equals(ROLE_STAFF)) {
-            return "Staff Access: Full management permissions - can manage rooms, reservations, guests, invoices, and payments";
-        } else if(role.equals(ROLE_GUEST)) {
-            return "Guest Access: Limited permissions - can view own reservations and make bookings";
-        }
-        return "Unknown role";
+
+    /** Allows changing the password after verifying the old one. */
+    public void changePassword(String oldPassword, String newPassword) {
+        if (!this.password.equals(oldPassword))
+            throw new LoginException("Current password is incorrect.");
+        setPassword(newPassword);
     }
+
+    public void resetFailedAttempts() { this.failedAttempts = 0; }
 }

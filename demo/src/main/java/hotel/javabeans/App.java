@@ -1,47 +1,54 @@
 package hotel.javabeans;
 
 import java.time.LocalDate;
-import java.util.Scanner;
+import java.util.EnumMap;
+import java.util.Map;
 
+import hotel.javabeans.payment.CreditCardPayment;
+import hotel.javabeans.payment.Payment;
 
 public class App 
 {
+    
+
     public static void main( String[] args )
     {
-                Scanner scan = new Scanner(System.in);
+        Map<TypeOfRoom, Integer> TypeOfRooms = new EnumMap<>(TypeOfRoom.class);
+        TypeOfRooms.put(TypeOfRoom.SINGLE, 1);
+        TypeOfRooms.put(TypeOfRoom.DOUBLE, 2);
 
-        //Reservation
-        System.out.print("Enter guest name: ");
-        String name = scan.nextLine();
+        Map<TypeOfRoom, Double> roomRates = new EnumMap<>(TypeOfRoom.class);
+        roomRates.put(TypeOfRoom.SINGLE, 50.0);
+        roomRates.put(TypeOfRoom.DOUBLE, 80.0);
 
-        System.out.print("Enter phone number: ");
-        String phone = scan.nextLine();
+        Invoice invoice = new Invoice(
+            "BK001",        // bookingId
+            TypeOfRooms,
+            roomRates,
+            3,              // numberOfNights
+            5,              // numberOfGuests
+            10.0,           // discount
+            40.0,           // deposit already paid
+            null            // payment (not paid yet)
+        );
 
-        System.out.print("Enter room number: ");
-        int roomNumber = scan.nextInt();
+        Payment payment = new CreditCardPayment(
+            "P001",
+            invoice.getTotalAmount(),
+            LocalDate.now(),
+            Payment.PaymentStatus.COMPLETED,
+            "1234567890",
+            "John Doe",
+            "12/30"
+        );
 
-        System.out.print("Enter check-in date (YYYY-MM-DD): ");
-        LocalDate checkIn = LocalDate.parse(scan.next());
-
-        System.out.print("Enter check-out date (YYYY-MM-DD): ");
-        LocalDate checkOut = LocalDate.parse(scan.next());
-
-        System.out.print("Enter booking price: ");
-        double price = scan.nextDouble();
-
-        Reservation r = new Reservation(name, phone, roomNumber, checkIn, checkOut, price);
-
-        // display reservation 
-        System.out.println("\n--- Reservation Details ---");
-        System.out.println("Guest Name: " + r.getGuestName());
-        System.out.println("Phone: " + r.getPhone());
-        System.out.println("Room Number: " + r.getRoomNumber());
-        System.out.println("Check-in Date: " + r.getCheckInDate());
-        System.out.println("Check-out Date: " + r.getCheckOutDate());
-        System.out.println("Booking Price: $" + r.getBookingPrice());
-
-        scan.close();
+        invoice.payInvoice(payment);
+        System.out.println(invoice);
+        // System.out.println("Total: $" + invoice.getTotalAmount());
+        // System.out.println("Paid? " + invoice.isPaid());
     }
+
+    
 }
     
 

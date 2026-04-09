@@ -3,295 +3,300 @@ package hotel.javabeans;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Hotel {
-    private String hotelName;
-    private String address;
-    private List<Room> rooms;
-    private List<Reservation> reservations;
-    private List<Guest> guests;
-    private List<Staff> staffMembers;
-    private List<Invoice> invoices;
-    private List<Payment> payments;
+import hotel.javabeans.Person.Guest;
+import hotel.javabeans.Person.Staff;
+import hotel.javabeans.payment.Payment;
 
+/**
+ * Central aggregate for the hotel. All add/remove/find operations throw
+ * {@link HotelException} for domain-level errors instead of returning null.
+ */
+public class Hotel {
+
+    // ── Custom exception ──────────────────────────────────────────────────────
+    public static class HotelException extends RuntimeException {
+        public HotelException(String message)            { super(message); }
+        public HotelException(String message, Throwable cause) { super(message, cause); }
+    }
+
+    // ── Fields ────────────────────────────────────────────────────────────────
+    private String         hotelName;
+    private String         address;
+    private List<Room>        rooms        = new ArrayList<>();
+    private List<Reservation> reservations = new ArrayList<>();
+    private List<Guest>       guests       = new ArrayList<>();
+    private List<Staff>       staffMembers = new ArrayList<>();
+    private List<Invoice>     invoices     = new ArrayList<>();
+    private List<Payment>     payments     = new ArrayList<>();
+
+    // ── Constructor ───────────────────────────────────────────────────────────
     public Hotel(String hotelName, String address) {
         setHotelName(hotelName);
         setAddress(address);
-        this.rooms = new ArrayList<>();
-        this.reservations = new ArrayList<>();
-        this.guests = new ArrayList<>();
-        this.staffMembers = new ArrayList<>();
-        this.invoices = new ArrayList<>();
-        this.payments = new ArrayList<>();
     }
 
-    // Hotel name and address setters with validation
+    // ── Hotel setters/getters ─────────────────────────────────────────────────
     public void setHotelName(String hotelName) {
-        if(hotelName != null && !hotelName.isEmpty()) {
-            this.hotelName = hotelName;
-        } else {
-            throw new IllegalArgumentException("Hotel name cannot be null or empty.");
-        }
+        if (hotelName == null || hotelName.trim().isEmpty())
+            throw new HotelException("Hotel name cannot be null or empty.");
+        this.hotelName = hotelName.trim();
     }
 
     public void setAddress(String address) {
-        if(address != null && !address.isEmpty()) {
-            this.address = address;
-        } else {
-            throw new IllegalArgumentException("Address cannot be null or empty.");
-        }
-    }
-    
-    public String getHotelName() {
-        return hotelName;
+        if (address == null || address.trim().isEmpty())
+            throw new HotelException("Address cannot be null or empty.");
+        this.address = address.trim();
     }
 
-    public String getAddress() {
-        return address;
-    }
+    public String getHotelName() { return hotelName; }
+    public String getAddress()   { return address; }
 
-    public List<Room> getRooms() {
-        return rooms;
-    }
+    // =========================================================================
+    // ROOMS
+    // =========================================================================
 
-    public List<Reservation> getReservations() {
-        return reservations;
-    }
-
-    public List<Guest> getGuests() {
-        return guests;
-    }
-
-    public List<Staff> getStaffMembers() {
-        return staffMembers;
-    }
-
-    public List<Invoice> getInvoices() {
-        return invoices;
-    }
-
-    public List<Payment> getPayments() {
-        return payments;
-    }
-
-    // Room management methods
     public void addRoom(Room room) {
-        if(room != null) {
-            rooms.add(room);
-        } else {
-            throw new IllegalArgumentException("Room cannot be null.");
-        }
+        if (room == null)
+            throw new HotelException("Room cannot be null.");
+        if (findRoomByNumber(room.getRoomNumber()) != null)
+            throw new HotelException("Room with number '" + room.getRoomNumber() + "' already exists.");
+        rooms.add(room);
     }
 
     public void removeRoom(Room room) {
-        if(room != null && rooms.contains(room)) {
-            rooms.remove(room);
-        } else {
-            throw new IllegalArgumentException("Room not found or is null.");
-        }
+        if (room == null)
+            throw new HotelException("Room cannot be null.");
+        if (!rooms.remove(room))
+            throw new HotelException("Room '" + room.getRoomNumber() + "' not found in the hotel.");
     }
 
+    /** @return the room, or {@code null} if not found (use {@link #getRoom} for a throwing version). */
     public Room findRoomByNumber(String roomNumber) {
-        for(Room room : rooms) {
-            if(room.getRoomNumber().equals(roomNumber)) {
-                return room;
-            }
-        }
+        if (roomNumber == null) return null;
+        for (Room r : rooms)
+            if (r.getRoomNumber().equalsIgnoreCase(roomNumber.trim())) return r;
         return null;
     }
 
+    /** @throws HotelException if the room does not exist. */
+    public Room getRoom(String roomNumber) {
+        Room r = findRoomByNumber(roomNumber);
+        if (r == null) throw new HotelException("Room '" + roomNumber + "' not found.");
+        return r;
+    }
+
+    public List<Room> getRooms()          { return new ArrayList<>(rooms); }
+    public int        getTotalRooms()     { return rooms.size(); }
+
     public List<Room> getAvailableRooms() {
-        List<Room> availableRooms = new ArrayList<>();
-        for(Room room : rooms) {
-            if(room.getStatus().equals(Room.AVAILABLE)) {
-                availableRooms.add(room);
-            }
-        }
-        return availableRooms;
+        List<Room> available = new ArrayList<>();
+        for (Room r : rooms)
+            if (Room.AVAILABLE.equals(r.getStatus())) available.add(r);
+        return available;
     }
 
-    public List<Room> getRoomsByType(String roomType) {
-        List<Room> roomsByType = new ArrayList<>();
-        for(Room room : rooms) {
-            if(room.getRoomType().equals(roomType)) {
-                roomsByType.add(room);
-            }
-        }
-        return roomsByType;
+    public List<Room> getRoomsByType(TypeOfRoom type) {
+        if (type == null) throw new HotelException("Room type cannot be null.");
+        List<Room> result = new ArrayList<>();
+        for (Room r : rooms)
+            if (r.getTypeOfRoom() == type) result.add(r);
+        return result;
     }
 
-    // Reservation management methods
+    // =========================================================================
+    // RESERVATIONS
+    // =========================================================================
+
     public void addReservation(Reservation reservation) {
-        if(reservation != null) {
-            reservations.add(reservation);
-        } else {
-            throw new IllegalArgumentException("Reservation cannot be null.");
-        }
+        if (reservation == null)
+            throw new HotelException("Reservation cannot be null.");
+        reservations.add(reservation);
     }
 
     public void removeReservation(Reservation reservation) {
-        if(reservation != null && reservations.contains(reservation)) {
-            reservations.remove(reservation);
-        } else {
-            throw new IllegalArgumentException("Reservation not found or is null.");
-        }
+        if (reservation == null || !reservations.remove(reservation))
+            throw new HotelException("Reservation not found or is null.");
     }
 
-    public List<Reservation> getReservationsByGuestName(String guestName) {
-        List<Reservation> guestReservations = new ArrayList<>();
-        for(Reservation reservation : reservations) {
-            if(reservation.getGuestName().equals(guestName)) {
-                guestReservations.add(reservation);
-            }
-        }
-        return guestReservations;
+    public Reservation findReservationById(String reservationId) {
+        if (reservationId == null) return null;
+        for (Reservation r : reservations)
+            if (r.getReservationId().equals(reservationId.trim())) return r;
+        return null;
     }
 
-    // Guest management methods
+    public Reservation getReservation(String reservationId) {
+        Reservation r = findReservationById(reservationId);
+        if (r == null) throw new HotelException("Reservation '" + reservationId + "' not found.");
+        return r;
+    }
+
+    public List<Reservation> getReservations()                     { return new ArrayList<>(reservations); }
+    public int               getTotalReservations()               { return reservations.size(); }
+
+    public List<Reservation> getReservationsByGuestName(String name) {
+        if (name == null || name.trim().isEmpty())
+            throw new HotelException("Guest name cannot be null or empty.");
+        List<Reservation> result = new ArrayList<>();
+        for (Reservation r : reservations)
+            if (r.getGuestName().equalsIgnoreCase(name.trim())) result.add(r);
+        return result;
+    }
+
+    // =========================================================================
+    // GUESTS
+    // =========================================================================
+
     public void addGuest(Guest guest) {
-        if(guest != null) {
-            guests.add(guest);
-        } else {
-            throw new IllegalArgumentException("Guest cannot be null.");
-        }
+        if (guest == null)
+            throw new HotelException("Guest cannot be null.");
+        if (findGuestById(guest.getId()) != null)
+            throw new HotelException("Guest with ID '" + guest.getId() + "' already exists.");
+        guests.add(guest);
     }
 
     public void removeGuest(Guest guest) {
-        if(guest != null && guests.contains(guest)) {
-            guests.remove(guest);
-        } else {
-            throw new IllegalArgumentException("Guest not found or is null.");
-        }
+        if (guest == null || !guests.remove(guest))
+            throw new HotelException("Guest not found or is null.");
     }
 
     public Guest findGuestById(String id) {
-        for(Guest guest : guests) {
-            if(guest.getId().equals(id)) {
-                return guest;
-            }
-        }
+        if (id == null) return null;
+        for (Guest g : guests)
+            if (g.getId().equals(id.trim())) return g;
         return null;
     }
 
-    // Staff management methods
+    public Guest getGuest(String id) {
+        Guest g = findGuestById(id);
+        if (g == null) throw new HotelException("Guest with ID '" + id + "' not found.");
+        return g;
+    }
+
+    public List<Guest> getGuests()  { return new ArrayList<>(guests); }
+    public int         getTotalGuests() { return guests.size(); }
+
+    // =========================================================================
+    // STAFF
+    // =========================================================================
+
     public void addStaff(Staff staff) {
-        if(staff != null) {
-            staffMembers.add(staff);
-        } else {
-            throw new IllegalArgumentException("Staff cannot be null.");
-        }
+        if (staff == null)
+            throw new HotelException("Staff cannot be null.");
+        if (findStaffById(staff.getId()) != null)
+            throw new HotelException("Staff with ID '" + staff.getId() + "' already exists.");
+        staffMembers.add(staff);
     }
 
     public void removeStaff(Staff staff) {
-        if(staff != null && staffMembers.contains(staff)) {
-            staffMembers.remove(staff);
-        } else {
-            throw new IllegalArgumentException("Staff not found or is null.");
-        }
+        if (staff == null || !staffMembers.remove(staff))
+            throw new HotelException("Staff not found or is null.");
     }
 
     public Staff findStaffById(String id) {
-        for(Staff staff : staffMembers) {
-            if(staff.getId().equals(id)) {
-                return staff;
-            }
-        }
+        if (id == null) return null;
+        for (Staff s : staffMembers)
+            if (s.getId().equals(id.trim())) return s;
         return null;
     }
 
-    public List<Staff> getStaffByPosition(String position) {
-        List<Staff> staffByPosition = new ArrayList<>();
-        for(Staff staff : staffMembers) {
-            if(staff.getPosition().equalsIgnoreCase(position)) {
-                staffByPosition.add(staff);
-            }
-        }
-        return staffByPosition;
+    public Staff getStaff(String id) {
+        Staff s = findStaffById(id);
+        if (s == null) throw new HotelException("Staff with ID '" + id + "' not found.");
+        return s;
     }
 
-    // Invoice management methods
+    public List<Staff> getStaffMembers() { return new ArrayList<>(staffMembers); }
+    public int         getTotalStaff()   { return staffMembers.size(); }
+
+    public List<Staff> getStaffByPosition(String position) {
+        if (position == null || position.trim().isEmpty())
+            throw new HotelException("Position cannot be null or empty.");
+        List<Staff> result = new ArrayList<>();
+        for (Staff s : staffMembers)
+            if (s.getPosition().equalsIgnoreCase(position.trim())) result.add(s);
+        return result;
+    }
+
+    // =========================================================================
+    // INVOICES
+    // =========================================================================
+
     public void addInvoice(Invoice invoice) {
-        if(invoice != null) {
-            invoices.add(invoice);
-        } else {
-            throw new IllegalArgumentException("Invoice cannot be null.");
-        }
+        if (invoice == null)
+            throw new HotelException("Invoice cannot be null.");
+        invoices.add(invoice);
     }
 
     public void removeInvoice(Invoice invoice) {
-        if(invoice != null && invoices.contains(invoice)) {
-            invoices.remove(invoice);
-        } else {
-            throw new IllegalArgumentException("Invoice not found or is null.");
-        }
+        if (invoice == null || !invoices.remove(invoice))
+            throw new HotelException("Invoice not found or is null.");
     }
 
     public Invoice findInvoiceById(String invoiceId) {
-        for(Invoice invoice : invoices) {
-            if(invoice.getInvoiceId().equals(invoiceId)) {
-                return invoice;
-            }
-        }
+        if (invoiceId == null) return null;
+        for (Invoice inv : invoices)
+            if (inv.getInvoiceId().equals(invoiceId.trim())) return inv;
         return null;
     }
+
+    public Invoice getInvoice(String invoiceId) {
+        Invoice inv = findInvoiceById(invoiceId);
+        if (inv == null) throw new HotelException("Invoice '" + invoiceId + "' not found.");
+        return inv;
+    }
+
+    public List<Invoice>  getInvoices()    { return new ArrayList<>(invoices); }
 
     public List<Invoice> getUnpaidInvoices() {
-        List<Invoice> unpaidInvoices = new ArrayList<>();
-        for(Invoice invoice : invoices) {
-            if(!invoice.getIsPaid()) {
-                unpaidInvoices.add(invoice);
-            }
-        }
-        return unpaidInvoices;
-    }
-
-    public void addPayment(Payment payment) {
-        if(payment != null) {
-            payments.add(payment);
-        } else {
-            throw new IllegalArgumentException("Payment cannot be null.");
-        }
-    }
-
-    public void removePayment(Payment payment) {
-        if(payment != null && payments.contains(payment)) {
-            payments.remove(payment);
-        } else {
-            throw new IllegalArgumentException("Payment not found or is null.");
-        }
-    }
-
-    public Payment findPaymentById(String paymentId) {
-        for(Payment payment : payments) {
-            if(payment.getPaymentId().equals(paymentId)) {
-                return payment;
-            }
-        }
-        return null;
-    }
-
-    public int getTotalRooms() {
-        return rooms.size();
-    }
-
-    public int getTotalGuests() {
-        return guests.size();
-    }
-
-    public int getTotalStaff() {
-        return staffMembers.size();
-    }
-
-    public int getTotalReservations() {
-        return reservations.size();
+        List<Invoice> unpaid = new ArrayList<>();
+        for (Invoice inv : invoices)
+            if (!inv.isPaid()) unpaid.add(inv);
+        return unpaid;
     }
 
     public double getTotalRevenue() {
-        double totalRevenue = 0.0;
-        for(Invoice invoice : invoices) {
-            if(invoice.getIsPaid()) {
-                totalRevenue += invoice.getTotalAmount();
-            }
-        }
-        return totalRevenue;
+        double total = 0.0;
+        for (Invoice inv : invoices)
+            if (inv.isPaid()) total += inv.getTotalAmount();
+        return total;
+    }
+
+    // =========================================================================
+    // PAYMENTS
+    // =========================================================================
+
+    public void addPayment(Payment payment) {
+        if (payment == null)
+            throw new HotelException("Payment cannot be null.");
+        payments.add(payment);
+    }
+
+    public void removePayment(Payment payment) {
+        if (payment == null || !payments.remove(payment))
+            throw new HotelException("Payment not found or is null.");
+    }
+
+    public Payment findPaymentById(String paymentId) {
+        if (paymentId == null) return null;
+        for (Payment p : payments)
+            if (p.getPaymentId().equals(paymentId.trim())) return p;
+        return null;
+    }
+
+    public Payment getPayment(String paymentId) {
+        Payment p = findPaymentById(paymentId);
+        if (p == null) throw new HotelException("Payment '" + paymentId + "' not found.");
+        return p;
+    }
+
+    public List<Payment> getPayments() { return new ArrayList<>(payments); }
+
+    // ── toString ─────────────────────────────────────────────────────────────
+    @Override
+    public String toString() {
+        return "Hotel{name='" + hotelName + "', address='" + address +
+               "', rooms=" + rooms.size() + ", guests=" + guests.size() +
+               ", staff=" + staffMembers.size() + '}';
     }
 }
